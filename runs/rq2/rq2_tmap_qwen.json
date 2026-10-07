@@ -1,0 +1,63 @@
+{
+ "model": "qwen3-8b-local",
+ "budget": 40,
+ "n_units": 40,
+ "arms": {
+  "tmap-ladder": {
+   "n": 40,
+   "viol_mean": 6.1,
+   "fresh_viol_mean": 3.225,
+   "memo_hit": 0.46375,
+   "replay_viol": 115
+  },
+  "binary": {
+   "n": 40,
+   "viol_mean": 6.475,
+   "fresh_viol_mean": 5.125,
+   "memo_hit": 0.2325,
+   "replay_viol": 54
+  },
+  "prox-v21": {
+   "n": 40,
+   "viol_mean": 3.85,
+   "fresh_viol_mean": 2.825,
+   "memo_hit": 0.220625,
+   "replay_viol": 41
+  }
+ },
+ "tests": {
+  "primary_viol": {
+   "binary": {
+    "A12": 0.5,
+    "p_one_sided": 0.8270908596886654,
+    "holm_p": 0.8270908596886654,
+    "p_two_sided": 0.3458182806226693,
+    "n_pairs": 40
+   },
+   "prox-v21": {
+    "A12": 0.675,
+    "p_one_sided": 0.0005293709614562439,
+    "holm_p": 0.0010587419229124877,
+    "p_two_sided": 0.0010587419229124877,
+    "n_pairs": 40
+   }
+  },
+  "secondary_fresh": {
+   "binary": {
+    "A12": 0.2125,
+    "p_one_sided": 0.999722466861639,
+    "holm_p": 0.999722466861639,
+    "p_two_sided": 0.0005550662767220217,
+    "n_pairs": 40
+   },
+   "prox-v21": {
+    "A12": 0.525,
+    "p_one_sided": 0.3050729399579418,
+    "holm_p": 0.6101458799158836,
+    "p_two_sided": 0.6101458799158836,
+    "n_pairs": 40
+   }
+  }
+ },
+ "tmap_beats_binary": false
+}

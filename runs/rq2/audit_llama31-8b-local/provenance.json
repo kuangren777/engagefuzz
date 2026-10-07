@@ -1,0 +1,9 @@
+{
+ "request_count": 5473,
+ "served_ids": [
+  "llama31-8b-local=models/LLM-Research/Meta-Llama-3___1-8B-Instruct"
+ ],
+ "campaigns": 160,
+ "exec_rows": 6400,
+ "memo_hits": 905
+}

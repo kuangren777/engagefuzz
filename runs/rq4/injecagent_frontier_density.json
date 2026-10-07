@@ -1,0 +1,32 @@
+{
+ "claude-sonnet-5": {
+  "asr": 0.01,
+  "n": 300,
+  "l2plus_nonviol": 0.0
+ },
+ "gpt-5.6-sol": {
+  "asr": 0.0,
+  "n": 300,
+  "l2plus_nonviol": 0.0
+ },
+ "kimi-k3": {
+  "asr": 0.0,
+  "n": 300,
+  "l2plus_nonviol": 0.0
+ },
+ "deepseek-v4.1-flash": {
+  "asr": 0.0,
+  "n": 300,
+  "l2plus_nonviol": 0.0
+ },
+ "glm-5.3": {
+  "asr": 0.02,
+  "n": 300,
+  "l2plus_nonviol": 0.0
+ },
+ "gemini-3.1-pro": {
+  "asr": 0.08,
+  "n": 300,
+  "l2plus_nonviol": 0.0
+ }
+}
