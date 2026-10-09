@@ -1,0 +1,16 @@
+\begin{table}[t]\centering
+\caption{AgentDojo frontier density per model. Runs, attack-success rate and the level-three count and share among binary-failure runs, under the proximity ladder. Two models with a zero attack-success rate still produce level-three runs.}
+\label{tab:rq3pm}
+\begin{tabular}{lcccc}
+\toprule
+Model & runs & ASR & level-3 runs & share of failures \\
+\midrule
+claude-sonnet-5 & \rqthreePmClaudeN{} & \rqthreePmClaudeASR\% & \rqthreePmClaudeLthree{} & \rqthreePmClaudeLthreePct\% \\
+gpt-5.6-sol & \rqthreePmGptSolN{} & \rqthreePmGptSolASR\% & \rqthreePmGptSolLthree{} & \rqthreePmGptSolLthreePct\% \\
+gemini-3.1-pro & \rqthreePmGeminiN{} & \rqthreePmGeminiASR\% & \rqthreePmGeminiLthree{} & \rqthreePmGeminiLthreePct\% \\
+kimi-k3 & \rqthreePmKimiN{} & \rqthreePmKimiASR\% & \rqthreePmKimiLthree{} & \rqthreePmKimiLthreePct\% \\
+glm-5.3 & \rqthreePmGlmN{} & \rqthreePmGlmASR\% & \rqthreePmGlmLthree{} & \rqthreePmGlmLthreePct\% \\
+deepseek-v4.1-flash & \rqthreePmDeepseekN{} & \rqthreePmDeepseekASR\% & \rqthreePmDeepseekLthree{} & \rqthreePmDeepseekLthreePct\% \\
+\bottomrule
+\end{tabular}
+\end{table}

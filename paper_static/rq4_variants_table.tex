@@ -1,0 +1,14 @@
+\begin{table}[t]\centering
+\caption{InjecAgent transfer under three ladder definitions on Llama-3.1-8B, fail-only rank correlation over $n=\rqfourLlamaN$ units. The pre-registered definition is the main result. The first variant restricts both tiers to side-effect attacker tools and the second counts any attacker-tool call at both tiers.}
+\label{tab:rq4variants}
+\small
+\begin{tabular}{llc}
+\toprule
+Definition & Tier rule & $\rho$ \\
+\midrule
+pre-registered & value on any attacker tool, side-effect call below & \rqfourLlamaRho{} ($p=\rqfourLlamaP$) \\
+side-effect variant & both tiers on side-effect attacker tools & \rqfourLlamaRhoSide{} \\
+any-tool variant & both tiers on any attacker-tool call & \rqfourLlamaRhoDev{} \\
+\bottomrule
+\end{tabular}
+\end{table}

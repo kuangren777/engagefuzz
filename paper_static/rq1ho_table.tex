@@ -1,0 +1,16 @@
+\begin{table}[t]\centering
+\caption{RQ1 robustness of the association. The same-repetition rank correlation of the pre-registered analysis against the held-out control that splits a unit's repetitions into disjoint halves, with the held-out two-sided $p$. The pooled row centres each model before pooling.}
+\label{tab:rq1ho}
+\begin{tabular}{lccc}
+\toprule
+Model & same-repetition $\rho$ & held-out $\rho$ & held-out $p$ \\
+\midrule
+Qwen3-8B & \rqoneQwenEightBRho{} & \rqonehoQwenEightBRho{} & \rqonehoQwenEightBP{} \\
+Qwen3-32B & \rqoneQwenThirtyTwoBRho{} & \rqonehoQwenThirtyTwoBRho{} & \rqonehoQwenThirtyTwoBP{} \\
+Llama-3.1-8B & \rqoneLlamaRho{} & \rqonehoLlamaRho{} & \rqonehoLlamaP{} \\
+Granite-3.1-8B & \rqoneGraniteRho{} & \rqonehoGraniteRho{} & \rqonehoGraniteP{} \\
+\midrule
+Pooled & \rqoneCentredRho{} & \rqonehoPooledRho{} & \rqonehoPooledP{} \\
+\bottomrule
+\end{tabular}
+\end{table}

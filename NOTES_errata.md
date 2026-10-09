@@ -48,3 +48,7 @@ These analyses were added AFTER the referee reports, not pre-registered. They ar
   - `runs/rq2/qwen3-8b-local_both_banking_user_task_11_injection_task_3_tmap-ladder_0.jsonl.partial1791359852`
   - `runs/rq2/qwen3-8b-local_both_slack_user_task_0_injection_task_4_tmap-ladder_0.jsonl.partial1791359852`
   The authoritative re-runs are the fresh `..._tmap-ladder_0.jsonl` written on resume (memo hits make the re-run cheap; common random numbers preserved). The analysis glob `qwen3-8b-local_*_[0-9].jsonl` excludes `.partial*` by construction (verified), so the archived partials cannot enter rq2_tmap.py / rq2_paired.py.
+
+## 2026-10-09: tab:rq1defense pairing-key collision
+`analysis/make_expand_tables.py` paired runs by (user task, injection task) without the suite, so 4 targets from different suites collided: 38 paired units per model instead of 42. Key now includes the suite, as in the shipped `analysis/make_expand_tables.py`. Mean trigger rate, no defense -> defended, before -> after:
+Qwen3-8B 0.443->0.429, 0.242->0.224; Qwen3-32B 0.600->0.619, 0.311->0.333; Llama-3.1-8B 0.070->0.064, 0.032->0.029; Granite-3.1-8B 0.005->0.005, 0.000->0.000. Prose "0.600 to 0.311" -> "0.619 to 0.333". No other table uses this pairing.

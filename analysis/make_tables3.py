@@ -45,7 +45,7 @@ def rq2_suite():
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Per-suite view of RQ2 (exploratory, added after the pre-registered analysis). "
            r"Mean violations per campaign for proximity and binary success. The paired $\hat A_{12}$ "
-           r"of proximity against binary within each suite. We make no new significance claim here.}",
+           r"of proximity against binary within each suite.}",
            r"\label{tab:rq2suite}", r"\begin{tabular}{llcccc}", r"\toprule",
            r"Model & Suite & units & proximity & binary & $\hat A_{12}$ \\", r"\midrule"] + rows + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
@@ -76,13 +76,14 @@ def rq1_power():
         asr = st.mean(bool(r["security"]) for r in R)
         # fail-only units with variation (the ones a correlation can use)
         usable = sum(1 for k, v in cells.items() if any(not x["security"] for x in v))
-        mdr = min_detectable_rho(mixed)
+        mdr = min_detectable_rho(usable)
         rows.append(f"{disp} & {asr:.3f} & {len(cells)} & {mixed} & {usable} & {"--" if mdr != mdr else f"{mdr:.2f}"} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Power of the per-model RQ1 test (exploratory). A correlation can only use units "
            r"whose trigger rate varies, so on models with an attack-success rate near zero few units "
            r"are informative and only a large $\rho$ is detectable. ASR is the attack-success rate, "
-           r"mixed is the count of units with a trigger rate strictly between zero and one.}",
+           r"mixed is the count of units with a trigger rate strictly between zero and one and the "
+           r"detectable $\rho$ is computed at the usable-unit count with 80\% power.}",
            r"\label{tab:rq1power}", r"\begin{tabular}{lccccc}", r"\toprule",
            r"Model & ASR & units & mixed & usable & min detectable $\rho$ \\", r"\midrule"] + rows + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]

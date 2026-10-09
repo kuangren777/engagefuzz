@@ -62,20 +62,29 @@ def rq1_table():
     open(os.path.join(OUT, "rq1_levelrate_table.tex"), "w").write("\n".join(tab) + "\n")
 
 
+ARM_NAME = {"prox-v21": "proximity"}  # display name used in the paper
+
+
 def memo_table():
     rows = []
     for tag, disp in [("qwen", "Qwen3-8B"), ("llama", "Llama-3.1-8B")]:
         d = json.load(open(os.path.join(RUNS, "rq2", f"rq2_paired_{tag}.json")))
         for arm in ["prox-v21", "random", "binary", "coverage"]:
             a = d["arms"][arm]
-            rows.append((disp, arm, a["memo_hit"], a["replay_viol"]))
+            rows.append((disp, ARM_NAME.get(arm, arm), f"{a['memo_hit']:.2f}", a["replay_viol"]))
+        if tag == "qwen":
+            # judge-graded T-MAP arm (Qwen3-8B only); hit rate via the \rqtwoTmapMemo macro
+            t = json.load(open(os.path.join(RUNS, "rq2", "rq2_tmap_qwen.json")))["arms"]["tmap-ladder"]
+            rows.append((disp, "T-MAP ladder", r"\rqtwoTmapMemo{}", t["replay_viol"]))
     body = []
     for disp, arm, mh, rv in rows:
-        body.append(f"{disp} & {arm} & {mh:.2f} & {rv} " + r"\\")
+        body.append(f"{disp} & {arm} & {mh} & {rv} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Execution-memo hit rate and replay violations per arm. A replay violation is a "
-           r"violation served from the memo rather than a fresh execution. Binary success replays the "
-           r"most, which the fresh-only analysis in RQ2 controls for.}", r"\label{tab:memo}",
+           r"violation served from the memo rather than a fresh execution. Among the four deterministic "
+           r"arms on Qwen3-8B binary success replays the most, which the fresh-only analysis in RQ2 "
+           r"controls for. The judge-graded arm's replays come from executions the other arms ran "
+           r"first, because it ran last.}", r"\label{tab:memo}",
            r"\begin{tabular}{llcc}", r"\toprule",
            r"Model & Reward & memo-hit rate & replay violations \\", r"\midrule"] + body + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
