@@ -66,6 +66,7 @@ Every `\input` file of the paper maps to one generator. All `.tex` outputs are b
 | `rq2_suite_table.tex` | `make_tables3.py` (also writes the unused `rq1_power_table.tex`) | `runs/rq2` |
 | `rq2_targets_table.tex` | `make_rq2_targets_table.py` | `runs/rq2/*_[0-9].jsonl` |
 | `rq4_frontier_table.tex` | `make_rq4_frontier_table.py` | `runs/rq4/injecagent_frontier_density.json` |
+| `px_numbers.tex` (level-3 construct validity) | `px1a_collision.py`, `px2_label.py score`, `make_px_numbers.py` | `runs/rq1`, `runs/rq2`, `testbed/data/frontier.jsonl`, `runs/px/px2_items.json` and the two labeller files `runs/px/px2_*.jsonl` |
 | `rq1ho_table.tex`, `rqtax_table.tex`, `rq3_permodel_table.tex`, `rq4_ladder_map.tex`, `rq4_variants_table.tex` | static layout in `paper_static/`, every number is a macro from the files above | none |
 | `figs/rq1_levelrate.pdf`, `figs/rq3_density.pdf` | `make_figs.py` | `runs/rq1`, `testbed/data/frontier.jsonl` |
 | `figs/rq2_box.pdf`, `rq2_fresh.pdf`, `rq4_injeccurve.pdf`, `rq4_frontierbars.pdf` | `make_figs2.py` | `runs/rq2`, `runs/rq4` |
@@ -90,6 +91,9 @@ export CAMEL_HUB_KEY=none                        # any value, analysis makes no 
 | `rq2_tmap.py` | `python3 rq2_tmap.py ../runs/rq2 qwen3-8b-local --json out_t.json` | T-MAP ladder-reward arm comparison. Equals `runs/rq2/rq2_tmap_qwen.json` |
 | `make_rq2_table.py` | `python3 make_rq2_table.py out_q.json out_l.json --macros ../out/rq2_numbers.tex --table ../out/rq2_table.tex` | RQ2 macros and main RQ2 table |
 | `rq3_taxonomy.py` | `python3 rq3_taxonomy.py` | level-3 failure taxonomy macros `out/rqtax_numbers.tex` |
+| `px1a_collision.py` | `python3 px1a_collision.py` | collision rate of the level-3 rule when each failed trace is scored against injection tasks the agent never saw. Equals `runs/px/px1a.json` |
+| `px2_label.py` | `python3 px2_label.py build`, `label <model>` (needs `CAMEL_HUB_URL`, `CAMEL_HUB_KEY`), `score` | two-labeller precision study of level 3. `score` runs offline on the shipped labels and equals `runs/px/px2_summary.json` |
+| `make_px_numbers.py` | `python3 make_px_numbers.py` | `out/px_numbers.tex` |
 | `make_tables2.py` | `python3 make_tables2.py` | `out/rq1_levelrate_table.tex`, `out/memo_table.tex` |
 | `make_tables3.py` | `python3 make_tables3.py` | `out/rq2_suite_table.tex`, `out/rq1_power_table.tex` |
 | `make_rq4_tables.py` | `python3 make_rq4_tables.py - ../runs/rq4/injecagent_validity.json > ../out/rq4_tables.tex` | RQ4 InjecAgent validity table, not used by the paper. Equals `runs/rq4/rq4_tables.tex` |

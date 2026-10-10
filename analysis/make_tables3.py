@@ -47,7 +47,7 @@ def rq2_suite():
            r"Mean violations per campaign for proximity and binary success. The paired $\hat A_{12}$ "
            r"of proximity against binary within each suite.}",
            r"\label{tab:rq2suite}", r"\begin{tabular}{llcccc}", r"\toprule",
-           r"Model & Suite & units & proximity & binary & $\hat A_{12}$ \\", r"\midrule"] + rows + \
+           r"Model & Suite & units & proximity $\uparrow$ & binary $\uparrow$ & $\hat A_{12}$ $\uparrow$ \\", r"\midrule"] + rows + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     open(os.path.join(OUT, "rq2_suite_table.tex"), "w").write("\n".join(tab) + "\n")
 

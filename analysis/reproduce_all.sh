@@ -28,6 +28,15 @@ python3 make_tables2.py
 python3 make_tables3.py
 python3 make_rq2_targets_table.py
 python3 make_rq4_frontier_table.py
+# construct-validity checks (plan section 10): px1a.json and px2_summary.json are recomputed in place
+# from the shipped traces and labels, then compared against the shipped copies
+mkdir -p ../out/px_shipped && cp ../runs/px/px1a.json ../runs/px/px2_summary.json ../out/px_shipped/
+python3 px1a_collision.py > /dev/null
+python3 px2_label.py score > /dev/null
+for f in px1a px2_summary; do
+  cmp -s "../runs/px/$f.json" "../out/px_shipped/$f.json" && echo "same as runs/px/$f.json" || echo "DIFFERS from runs/px/$f.json"
+done
+python3 make_px_numbers.py > /dev/null
 cp ../paper_static/*.tex ../out/
 python3 make_figs.py
 python3 make_figs2.py

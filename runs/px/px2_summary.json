@@ -1,0 +1,137 @@
+{
+ "population": {
+  "partial-args": 325,
+  "wrong-function": 131,
+  "other": 7
+ },
+ "n_labelled": 258,
+ "labellers": {
+  "gpt-5.6-sol": {
+   "per_stratum": {
+    "partial-args": {
+     "n_items": 120,
+     "progress": 100,
+     "not_progress": 19,
+     "unclear": 0,
+     "other": 1,
+     "precision": 0.8403361344537815,
+     "ci95": [
+      0.7640484451643166,
+      0.8953373003811664
+     ]
+    },
+    "wrong-function": {
+     "n_items": 131,
+     "progress": 36,
+     "not_progress": 94,
+     "unclear": 0,
+     "other": 1,
+     "precision": 0.27692307692307694,
+     "ci95": [
+      0.2072450335350356,
+      0.35940688933498394
+     ]
+    },
+    "other": {
+     "n_items": 7,
+     "progress": 7,
+     "not_progress": 0,
+     "unclear": 0,
+     "other": 0,
+     "precision": 1.0,
+     "ci95": [
+      0.6456611570247934,
+      1.0
+     ]
+    }
+   },
+   "weighted_precision": 0.6833394530764625
+  },
+  "gemini-3.1-pro": {
+   "per_stratum": {
+    "partial-args": {
+     "n_items": 120,
+     "progress": 105,
+     "not_progress": 15,
+     "unclear": 0,
+     "other": 0,
+     "precision": 0.875,
+     "ci95": [
+      0.8039690855177497,
+      0.9227657111903032
+     ]
+    },
+    "wrong-function": {
+     "n_items": 131,
+     "progress": 37,
+     "not_progress": 94,
+     "unclear": 0,
+     "other": 0,
+     "precision": 0.2824427480916031,
+     "ci95": [
+      0.2124018199725307,
+      0.3648799684369809
+     ]
+    },
+    "other": {
+     "n_items": 7,
+     "progress": 7,
+     "not_progress": 0,
+     "unclear": 0,
+     "other": 0,
+     "precision": 1.0,
+     "ci95": [
+      0.6456611570247934,
+      1.0
+     ]
+    }
+   },
+   "weighted_precision": 0.7092332613390929
+  }
+ },
+ "consensus": {
+  "per_stratum": {
+   "partial-args": {
+    "n_items": 120,
+    "progress": 100,
+    "not_progress": 15,
+    "unclear": 0,
+    "other": 5,
+    "precision": 0.8695652173913043,
+    "ci95": [
+     0.7959008950874155,
+     0.9193368667737508
+    ]
+   },
+   "wrong-function": {
+    "n_items": 131,
+    "progress": 31,
+    "not_progress": 89,
+    "unclear": 0,
+    "other": 11,
+    "precision": 0.25833333333333336,
+    "ci95": [
+     0.18837283808050675,
+     0.343286959596526
+    ]
+   },
+   "other": {
+    "n_items": 7,
+    "progress": 7,
+    "not_progress": 0,
+    "unclear": 0,
+    "other": 0,
+    "precision": 1.0,
+    "ci95": [
+     0.6456611570247934,
+     1.0
+    ]
+   }
+  },
+  "weighted_precision": 0.6985968948571072
+ },
+ "kappa_3label": 0.8746812386156648,
+ "kappa_progress": 0.8738463419106411,
+ "ambiguity_share": 0.06201550387596899,
+ "ambiguity_weighted": 0.05300575953923686
+}

@@ -71,9 +71,9 @@ def main():
            r"\caption{RQ2 closed-loop reward comparison at an equal budget. We report violations per "
            r"campaign for each reward arm and the paired effect size $\hat A_{12}$ of proximity "
            r"against random, binary and coverage. A value above 0.5 favours proximity and 0.5 is a tie. "
-           r"The T-MAP column is the judge-graded ladder arm, run on Qwen3-8B only.}",
+           r"The T-MAP column is the T-MAP ladder arm, run on Qwen3-8B only.}",
            r"\label{tab:rq2}", r"\begin{tabular}{lccccc c}", r"\toprule",
-           r"Model & proximity & random & binary & coverage & T-MAP & $\hat A_{12}$ vs r/b/c \\",
+           r"Model & proximity $\uparrow$ & random $\uparrow$ & binary $\uparrow$ & coverage $\uparrow$ & T-MAP $\uparrow$ & $\hat A_{12}$ vs r/b/c $\uparrow$ \\",
            r"\midrule"]
     tab += rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     if macros:

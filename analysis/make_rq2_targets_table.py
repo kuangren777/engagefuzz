@@ -46,10 +46,10 @@ def main():
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Per-target view of RQ2 (exploratory). Mean violations per campaign for each "
            r"reward arm on every selected target, with the paired $\hat A_{12}$ of proximity against "
-           r"binary success over the five seeds. The judge-graded arm runs on Qwen3-8B only. A dash "
+           r"binary success over the five seeds. The T-MAP ladder arm runs on Qwen3-8B only. A dash "
            r"marks an arm that was not run on that model.}",
            r"\label{tab:rq2targets}", r"\begin{tabular}{llccccc c}", r"\toprule",
-           r"Model & Target & prox & rand & binary & cov & T-MAP & $\hat A_{12}$ p/b \\", r"\midrule"] + \
+           r"Model & Target & prox $\uparrow$ & rand $\uparrow$ & binary $\uparrow$ & cov $\uparrow$ & T-MAP $\uparrow$ & $\hat A_{12}$ p/b $\uparrow$ \\", r"\midrule"] + \
           rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     open(OUT, "w").write("\n".join(tab) + "\n")
     print(f"rq2_targets_table: {len(rows)} target rows")

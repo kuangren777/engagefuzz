@@ -44,7 +44,7 @@ def rq2_ops():
            r"share that reaches the level-three tier without violating. Operators are ordered by "
            r"violation share.}",
            r"\label{tab:rq2ops}", r"\begin{tabular}{lccc}", r"\toprule",
-           r"Operator & executions & violates & level 3 only \\", r"\midrule"] + rows + \
+           r"Operator & executions & violates $\uparrow$ & level 3 only \\", r"\midrule"] + rows + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     open(os.path.join(OUT, "rq2_ops_table.tex"), "w").write("\n".join(tab) + "\n")
     print("rq2_ops:", [(OPNAME.get(o, o), round(c['viol'] / max(1, c['n']), 3)) for o, c in sorted(per.items(), key=lambda kv: -kv[1]['viol'] / max(1, kv[1]['n']))])
