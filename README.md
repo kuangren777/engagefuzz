@@ -33,8 +33,8 @@ API models (the LLM judge of the `judge-ladder` and `tmap-ladder` arms, the fron
 OpenAI-compatible gateway that you choose. Set both variables yourself. There is no default host and no key in the code.
 
 ```bash
-export CAMEL_HUB_URL=https://your-gateway.example.com   # without the trailing /v1
-export CAMEL_HUB_KEY=...                                # your key
+export LLM_GATEWAY_URL=https://your-gateway.example.com   # without the trailing /v1
+export LLM_GATEWAY_KEY=...                                # your key
 export EF_JUDGE=gpt-5.5                                 # judge model name on your gateway (optional)
 ```
 
@@ -80,7 +80,7 @@ The individual steps are below. All commands run from `analysis/`. Create the ou
 cd analysis
 mkdir -p ../out/figs
 export AGENTDOJO_SRC=/path/to/agentdojo/src      # skip if agentdojo is pip-installed
-export CAMEL_HUB_KEY=none                        # any value, analysis makes no API call
+export LLM_GATEWAY_KEY=none                        # any value, analysis makes no API call
 ```
 
 | Script | Command | Produces |
@@ -92,13 +92,21 @@ export CAMEL_HUB_KEY=none                        # any value, analysis makes no 
 | `make_rq2_table.py` | `python3 make_rq2_table.py out_q.json out_l.json --macros ../out/rq2_numbers.tex --table ../out/rq2_table.tex` | RQ2 macros and main RQ2 table |
 | `rq3_taxonomy.py` | `python3 rq3_taxonomy.py` | level-3 failure taxonomy macros `out/rqtax_numbers.tex` |
 | `px1a_collision.py` | `python3 px1a_collision.py` | collision rate of the level-3 rule when each failed trace is scored against injection tasks the agent never saw. Equals `runs/px/px1a.json` |
-| `px2_label.py` | `python3 px2_label.py build`, `label <model>` (needs `CAMEL_HUB_URL`, `CAMEL_HUB_KEY`), `score` | two-labeller precision study of level 3. `score` runs offline on the shipped labels and equals `runs/px/px2_summary.json` |
+| `px2_label.py` | `python3 px2_label.py build`, `label <model>` (needs `LLM_GATEWAY_URL`, `LLM_GATEWAY_KEY`), `score` | two-labeller precision study of level 3. `score` runs offline on the shipped labels and equals `runs/px/px2_summary.json` |
 | `make_px_numbers.py` | `python3 make_px_numbers.py` | `out/px_numbers.tex` |
 | `make_tables2.py` | `python3 make_tables2.py` | `out/rq1_levelrate_table.tex`, `out/memo_table.tex` |
 | `make_tables3.py` | `python3 make_tables3.py` | `out/rq2_suite_table.tex`, `out/rq1_power_table.tex` |
 | `make_rq4_tables.py` | `python3 make_rq4_tables.py - ../runs/rq4/injecagent_validity.json > ../out/rq4_tables.tex` | RQ4 InjecAgent validity table, not used by the paper. Equals `runs/rq4/rq4_tables.tex` |
 | `make_figs.py` | `python3 make_figs.py` | `out/figs/rq1_levelrate.pdf`, `rq3_density.pdf` |
 | `make_figs2.py` | `python3 make_figs2.py` | `out/figs/rq2_box.pdf`, `rq2_fresh.pdf`, `rq4_injeccurve.pdf`, `rq4_frontierbars.pdf` |
+| `rq1_samepop.py` | `python3 rq1_samepop.py` | same-population rho for SI Table S3, `out/rq1samepop_table.tex`. Rewrites `runs/px/rq1_samepop.json` |
+| `efmt.py`, `fmtnum.py` | imported | the single number formatter: every rendered number is rounded once, half up, with count ratios passed as exact fractions |
+| `prox_v2.py` | imported | proximity ladder v2.1 grader used by every RQ |
+| `rq1_cluster.py`, `rq1_demote.py`, `rq1_heldout_undef.py` | `python3 <script>` | RQ1 sensitivity checks (target as cluster, demoted wrong-function runs, undefended held-out units). Write `runs/px/rq1_{cluster,demote,heldout_undef}.json` |
+| `rq2_unique.py`, `rq2_crosshost.py` | `python3 <script>` | RQ2 unique-violation view and the one-unit backend sensitivity. Write `runs/rq2/rq2_{unique,crosshost}.json`, read by `make_rq2_replay_macros.py` |
+| `rq3_floor_test.py` | `python3 rq3_floor_test.py` | RQ3 density against its collision floor, `runs/px/rq3_floor.json` |
+| `px1b_benign.py`, `px3_fresh.py`, `ablate_r3.py` | live runs (need a vLLM serve), then offline summaries | construct-validity checks and the reward-definition ablation. Shipped results: `runs/px/px1b*.json(l)`, `runs/px/px3.json`, `runs/px/ablate_r3.json`, read by `make_px_numbers.py` |
+| `make_method_fig2.py` | `python3 make_method_fig2.py` | alternative method figure, not used by the paper |
 | `injecagent/injecagent_prox.py` | `INJECAGENT_DIR=/path/to/InjecAgent python3 ../injecagent/injecagent_prox.py` | self-test of the InjecAgent proximity grader used for RQ4 (needs the InjecAgent data) |
 
 The LaTeX table environments are generated as `table`. The paper may wrap them in `table*`.

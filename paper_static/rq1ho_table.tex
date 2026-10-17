@@ -1,16 +1,16 @@
 \begin{table}[t]\centering
-\caption{RQ1 robustness of the association. The same-repetition rank correlation of the pre-registered analysis against the held-out control that splits a unit's repetitions into disjoint halves, with the held-out two-sided $p$. The pooled row centres each model before pooling.}
+\caption{RQ1 robustness of the association. The same-repetition rank correlation of the pre-registered analysis against the held-out control that splits a unit's repetitions into disjoint halves, with the held-out two-sided $p$ at 0.05 without correction. Held-out $n$ counts the units with a failed run in the level half. The pooled row centres each model before pooling.}
 \label{tab:rq1ho}
-\begin{tabular}{lccc}
+\begin{tabular}{lcccc}
 \toprule
-Model & same-repetition $\rho$ $\uparrow$ & held-out $\rho$ $\uparrow$ & held-out $p$ $\downarrow$ \\
+Model & held-out $n$ & same-repetition $\rho$ $\uparrow$ & held-out $\rho$ $\uparrow$ & held-out $p$ $\downarrow$ \\
 \midrule
-Qwen3-8B & \rqoneQwenEightBRho{} & \rqonehoQwenEightBRho{} & \rqonehoQwenEightBP{} \\
-Qwen3-32B & \rqoneQwenThirtyTwoBRho{} & \rqonehoQwenThirtyTwoBRho{} & \rqonehoQwenThirtyTwoBP{} \\
-Llama-3.1-8B & \rqoneLlamaRho{} & \rqonehoLlamaRho{} & \rqonehoLlamaP{} \\
-Granite-3.1-8B & \rqoneGraniteRho{} & \rqonehoGraniteRho{} & \rqonehoGraniteP{} \\
+Qwen3-8B & \rqonehoQwenEightBN{} & \rqoneQwenEightBRho{} & \rqonehoQwenEightBRho{} & \rqonehoQwenEightBP{} \\
+Qwen3-32B & \rqonehoQwenThirtyTwoBN{} & \rqoneQwenThirtyTwoBRho{} & \rqonehoQwenThirtyTwoBRho{} & \rqonehoQwenThirtyTwoBP{} \\
+Llama-3.1-8B & \rqonehoLlamaN{} & \rqoneLlamaRho{} & \rqonehoLlamaRho{} & \rqonehoLlamaP{} \\
+Granite-3.1-8B & \rqonehoGraniteN{} & \rqoneGraniteRho{} & \rqonehoGraniteRho{} & \rqonehoGraniteP{} \\
 \midrule
-Pooled & \rqoneCentredRho{} & \rqonehoPooledRho{} & \rqonehoPooledP{} \\
+Pooled & \rqonehoPooledN{} & \rqoneCentredRho{} & \rqonehoPooledRho{} & \rqonehoPooledP{} \\
 \bottomrule
 \end{tabular}
 \end{table}

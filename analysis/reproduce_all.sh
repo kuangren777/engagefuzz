@@ -5,7 +5,7 @@
 # Needs AGENTDOJO_SRC (or pip-installed agentdojo). pdflatex is only needed for the method figure.
 set -euo pipefail
 cd "$(dirname "$0")"
-export CAMEL_HUB_KEY="${CAMEL_HUB_KEY:-none}"
+export LLM_GATEWAY_KEY="${LLM_GATEWAY_KEY:-none}"
 mkdir -p ../out/figs
 
 python3 rq1_stats.py ../runs/rq1 --json ../out/rq1_stats.json > /dev/null
@@ -37,6 +37,10 @@ for f in px1a px2_summary; do
   cmp -s "../runs/px/$f.json" "../out/px_shipped/$f.json" && echo "same as runs/px/$f.json" || echo "DIFFERS from runs/px/$f.json"
 done
 python3 make_px_numbers.py > /dev/null
+# SI Table S3: same-population rho (also rewrites runs/px/rq1_samepop.json, compared below)
+cp ../runs/px/rq1_samepop.json ../out/px_shipped/ 2>/dev/null || true
+python3 rq1_samepop.py > /dev/null
+cmp -s ../runs/px/rq1_samepop.json ../out/px_shipped/rq1_samepop.json && echo "same as runs/px/rq1_samepop.json" || echo "DIFFERS from runs/px/rq1_samepop.json"
 cp ../paper_static/*.tex ../out/
 python3 make_figs.py
 python3 make_figs2.py

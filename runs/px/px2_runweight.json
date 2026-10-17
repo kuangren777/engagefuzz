@@ -1,0 +1,37 @@
+{
+ "runs": 1132,
+ "strat_runs": {
+  "partial-args": 919,
+  "wrong-function": 205,
+  "other": 8
+ },
+ "sample_mix": {
+  "partial-args": 120,
+  "wrong-function": 131,
+  "other": 7
+ },
+ "gpt-5.6-sol": {
+  "per_stratum_run_weighted": {
+   "partial-args": 0.9154929577464789,
+   "wrong-function": 0.22058823529411764,
+   "other": 1.0
+  },
+  "run_weighted_precision": 0.7902461275656434
+ },
+ "gemini-3.1-pro": {
+  "per_stratum_run_weighted": {
+   "partial-args": 0.9403508771929825,
+   "wrong-function": 0.21951219512195122,
+   "other": 1.0
+  },
+  "run_weighted_precision": 0.810231851714091
+ },
+ "consensus": {
+  "per_stratum_run_weighted": {
+   "partial-args": 0.9386281588447654,
+   "wrong-function": 0.20207253886010362,
+   "other": 1.0
+  },
+  "run_weighted_precision": 0.8056750427956366
+ }
+}

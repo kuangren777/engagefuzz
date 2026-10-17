@@ -8,6 +8,8 @@ import json
 import os
 import re
 import statistics as st
+from fractions import Fraction
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "out")
@@ -36,11 +38,11 @@ def rq2_ops():
             per[r["op"]]["l4"] += bool(r["security"])
     rows = []
     for op, c in sorted(per.items(), key=lambda kv: -kv[1]["viol"] / max(1, kv[1]["n"])):
-        rows.append(f"{OPNAME.get(op, op)} & {c['n']} & {100 * c['viol'] / max(1, c['n']):.1f}\\% & "
-                    f"{100 * c['l3'] / max(1, c['n']):.1f}\\% " + r"\\")
+        rows.append(f"{OPNAME.get(op, op)} & {c['n']} & {F(Fraction(100 * c['viol'], max(1, c['n'])), '.1f')}\\% & "
+                    f"{F(Fraction(100 * c['l3'], max(1, c['n'])), '.1f')}\\% " + r"\\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{Outcome by mutation operator over all fresh and replayed executions of the four "
-           r"deterministic reward arms on both models. Executions, the share that violates and the "
+           r"\caption{Outcome by mutation operator over all fresh and replayed executions of the proximity, "
+           r"random, binary-success and coverage reward \varwords{} on both models. Executions, the share that violates and the "
            r"share that reaches the level-three tier without violating. Operators are ordered by "
            r"violation share.}",
            r"\label{tab:rq2ops}", r"\begin{tabular}{lccc}", r"\toprule",
@@ -60,15 +62,15 @@ def rq1_defense():
         cells = collections.defaultdict(list)
         for r in R:
             cells[(r["suite"], r["ut"], r["it"], r["defense"])].append(r)
-        rate = {k: st.mean(bool(x["security"]) for x in v) for k, v in cells.items()}
+        rate = {k: mean(bool(x["security"]) for x in v) for k, v in cells.items()}
         pairs = [(rate[(su, ut, it, None)], rate[(su, ut, it, "both")]) for (su, ut, it, d) in rate
                  if d is None and (su, ut, it, "both") in rate]
         pu = [a for a, _ in pairs]
         pd = [b for _, b in pairs]
         if not pairs:
             continue
-        drop = st.mean(a - b for a, b in pairs)
-        rows.append(f"{disp} & {len(pairs)} & {st.mean(pu):.3f} & {st.mean(pd):.3f} & {drop:.3f} " + r"\\")
+        drop = mean(a - b for a, b in pairs)
+        rows.append(f"{disp} & {len(pairs)} & {F(mean(pu), '.3f')} & {F(mean(pd), '.3f')} & {F(drop, '.3f')} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Effect of the combined prompt-level defense in RQ1, per model. Units that exist "
            r"in both defense settings, the mean trigger rate without and with the defense and the mean "

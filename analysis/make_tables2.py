@@ -15,17 +15,20 @@ OUT = os.path.join(HERE, "..", "out")
 RUNS = os.path.join(HERE, "..", "runs")
 sys.path.insert(0, os.path.join(HERE, "..", "engine"))
 import engagefuzz as ef  # noqa: E402
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 MODELS = [("qwen3-8b-yf", "Qwen3-8B"), ("qwen3-32b-local", "Qwen3-32B"),
           ("llama31-8b-local", "Llama-3.1-8B"), ("granite31-8b-local", "Granite-3.1-8B")]
 
 
-def ci(xs, B=2000, seed=0):
-    if len(xs) < 2:
+def ci(groups, B=2000, seed=0):
+    """Cluster bootstrap: groups = per-target lists of run values; resample whole targets."""
+    if len(groups) < 2:
         return (float("nan"), float("nan"))
     rng = random.Random(seed); out = []
     for _ in range(B):
-        out.append(st.mean(rng.choice(xs) for _ in xs))
+        draw = [x for _ in groups for x in rng.choice(groups)]
+        out.append(mean(draw))
     out.sort()
     return out[int(0.025 * B)], out[int(0.975 * B) - 1]
 
@@ -41,21 +44,26 @@ def rq1_table():
         cells = collections.defaultdict(list)
         for r in R:
             cells[(r["suite"], r["ut"], r["it"], r["defense"])].append(r)
-        rate = {k: st.mean(bool(x["security"]) for x in v) for k, v in cells.items()}
+        rate = {k: mean(bool(x["security"]) for x in v) for k, v in cells.items()}
         lv = collections.defaultdict(list)
+        lvt = collections.defaultdict(lambda: collections.defaultdict(list))   # level -> target -> run values
         for r in R:
-            lv[ef.prox_v2.feats(r)["level21"]].append(rate[(r["suite"], r["ut"], r["it"], r["defense"])])
+            L, v = ef.prox_v2.feats(r)["level21"], rate[(r["suite"], r["ut"], r["it"], r["defense"])]
+            lv[L].append(v); lvt[L][(r["suite"], r["ut"], r["it"])].append(v)
         cellsline = []
         for L in range(5):
-            if lv[L]:
-                lo, hi = ci(lv[L])
-                cellsline.append(f"{st.mean(lv[L]):.2f} [{lo:.2f}, {hi:.2f}]")
+            if len(set(lv[L])) == 1:   # one run, or all runs from units with the same rate: no interval
+                cellsline.append(f"{F(lv[L][0], '.2f')} ($n={len(lv[L])}$)")
+            elif lv[L]:
+                lo, hi = ci(list(lvt[L].values()))
+                cellsline.append(f"{F(mean(lv[L]), '.2f')} [{F(lo, '.2f')}, {F(hi, '.2f')}]")
             else:
                 cellsline.append("--")
         rows.append(f"{disp} & " + " & ".join(cellsline) + r" \\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{RQ1 mean trigger rate of a unit by proximity level, per model, with 95\% "
-           r"bootstrap intervals over units. A dash marks a level with no units.}", r"\label{tab:rq1levelrate}",
+           r"\caption{RQ1 trigger rate by proximity level, per model. Each run is placed at its own level and "
+           r"contributes the trigger rate of its unit, so a cell is a mean over runs with a 95\% bootstrap "
+           r"interval that resamples whole targets with all their runs. A cell whose runs all share one rate shows its run count instead of an interval and a dash marks a level with no runs.}", r"\label{tab:rq1levelrate}",
            r"\begin{tabular}{lccccc}", r"\toprule",
            r"Model & L0 & L1 & L2 & L3 & L4 \\", r"\midrule"] + rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     open(os.path.join(OUT, "rq1_levelrate_table.tex"), "w").write("\n".join(tab) + "\n")
@@ -67,15 +75,15 @@ def memo_table():
         d = json.load(open(os.path.join(RUNS, "rq2", f"rq2_paired_{tag}.json")))
         for arm in ["prox-v21", "random", "binary", "coverage"]:
             a = d["arms"][arm]
-            rows.append((disp, {"prox-v21": "proximity"}.get(arm, arm), a["memo_hit"], a["replay_viol"]))
+            rows.append((disp, {"prox-v21": "proximity"}.get(arm, arm), exact(a["memo_hit"], a["n"] * d["budget"]), a["replay_viol"]))
         if tag == "qwen":
             t = json.load(open(os.path.join(RUNS, "rq2", "rq2_tmap_qwen.json")))["arms"]["tmap-ladder"]
-            rows.append((disp, "T-MAP ladder", t["memo_hit"], t["replay_viol"]))
+            rows.append((disp, "T-MAP ladder", exact(t["memo_hit"], t["n"] * d["budget"]), t["replay_viol"]))
     body = []
     for disp, arm, mh, rv in rows:
-        body.append(f"{disp} & {arm} & {mh:.2f} & {rv} " + r"\\")
+        body.append(f"{disp} & {arm} & {F(mh, '.2f')} & {rv} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{Execution-memo hit rate and replay violations per arm. A replay violation is a "
+           r"\caption{Execution-memo hit rate and replay violations per reward \varword{}. A replay violation is a "
            r"violation served from the memo rather than a fresh execution.}", r"\label{tab:memo}",
            r"\begin{tabular}{llcc}", r"\toprule",
            r"Model & Reward & memo-hit rate & replay violations \\", r"\midrule"] + body + \

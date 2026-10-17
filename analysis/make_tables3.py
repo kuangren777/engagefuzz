@@ -15,12 +15,15 @@ OUT = os.path.join(HERE, "..", "out")
 RUNS = os.path.join(HERE, "..", "runs")
 sys.path.insert(0, os.path.join(HERE, "..", "engine"))
 import engagefuzz as ef  # noqa: E402
+from fractions import Fraction
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 PAT = re.compile(r".+?_(None|both)_(banking|slack|travel)_(user_task_\d+)_(injection_task_\d+)_([a-z0-9-]+)_(\d+)\.jsonl$")
 
 
 def a12(x, y):
-    return sum((a > b) + 0.5 * (a == b) for a, b in zip(x, y)) / len(x)
+    """Exact A12: a win counts 2, a tie 1, over 2 n."""
+    return Fraction(sum(2 * (a > b) + (a == b) for a, b in zip(x, y)), 2 * len(x))
 
 
 def rq2_suite():
@@ -41,9 +44,9 @@ def rq2_suite():
             if not units:
                 continue
             px = [v["prox-v21"] for _, v in units]; bn = [v["binary"] for _, v in units]
-            rows.append(f"{disp} & {suite} & {len(units)} & {st.mean(px):.2f} & {st.mean(bn):.2f} & {a12(px, bn):.3f} " + r"\\")
+            rows.append(f"{disp} & {suite} & {len(units)} & {F(mean(px), '.2f')} & {F(mean(bn), '.2f')} & {F(a12(px, bn), '.3f')} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{Per-suite view of RQ2 (exploratory, added after the pre-registered analysis). "
+           r"\caption{Per-suite view of RQ2, post-hoc. "
            r"Mean violations per campaign for proximity and binary success. The paired $\hat A_{12}$ "
            r"of proximity against binary within each suite.}",
            r"\label{tab:rq2suite}", r"\begin{tabular}{llcccc}", r"\toprule",
@@ -71,13 +74,13 @@ def rq1_power():
         cells = collections.defaultdict(list)
         for r in R:
             cells[(r["suite"], r["ut"], r["it"], r["defense"])].append(r)
-        rate = {k: st.mean(bool(x["security"]) for x in v) for k, v in cells.items()}
+        rate = {k: mean(bool(x["security"]) for x in v) for k, v in cells.items()}
         mixed = sum(0 < v < 1 for v in rate.values())
-        asr = st.mean(bool(r["security"]) for r in R)
+        asr = mean(bool(r["security"]) for r in R)
         # fail-only units with variation (the ones a correlation can use)
         usable = sum(1 for k, v in cells.items() if any(not x["security"] for x in v))
         mdr = min_detectable_rho(usable)
-        rows.append(f"{disp} & {asr:.3f} & {len(cells)} & {mixed} & {usable} & {"--" if mdr != mdr else f"{mdr:.2f}"} " + r"\\")
+        rows.append(f"{disp} & {F(asr, '.3f')} & {len(cells)} & {mixed} & {usable} & {"--" if mdr != mdr else f"{F(mdr, '.2f')}"} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Power of the per-model RQ1 test (exploratory). A correlation can only use units "
            r"whose trigger rate varies, so on models with an attack-success rate near zero few units "

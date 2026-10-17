@@ -16,6 +16,8 @@ sys.path.insert(0, os.path.join(HERE, "..", "engine"))
 sys.path.insert(0, os.path.join(HERE))
 import engagefuzz as ef  # noqa: E402
 from prox_v2 import gt, atk_values, SIDE_PREFIX  # noqa: E402
+from fractions import Fraction
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 
 def classify(r):
@@ -55,13 +57,13 @@ def main():
     m("rqtaxN", str(sum(c.values())))
     for key, tag in [("partial-args", "Partial"), ("wrong-function", "Wrongfn"), ("other", "Other")]:
         m(f"rqtax{tag}", str(c.get(key, 0)))
-        m(f"rqtax{tag}Pct", f"{100*c.get(key,0)/n:.0f}")
+        m(f"rqtax{tag}Pct", f"{F(Fraction(100*c.get(key,0), n), '.1f')}")
     # RQ1-only split (census) + RQ2 memo-replay count, for the population note
     rq1l3 = [r for r in lvl3 if r.get("rep") is not None]   # census rows carry rep
     import collections as _c
     c1 = _c.Counter(classify(r) for r in rq1l3); n1 = sum(c1.values()) or 1
     for key, tag in [("partial-args", "Partial"), ("wrong-function", "Wrongfn"), ("other", "Other")]:
-        m(f"rqtaxRQone{tag}Pct", f"{100*c1.get(key,0)/n1:.0f}")
+        m(f"rqtaxRQone{tag}Pct", f"{F(Fraction(100*c1.get(key,0), n1), '.1f')}")
     m("rqtaxRQONEN", str(sum(c1.values())))
     m("rqtaxReplay", str(sum(1 for r in lvl3 if r.get("memo_hit"))))
     open(os.path.join(HERE, "..", "out", "rqtax_numbers.tex"), "w").write("\n".join(L) + "\n")

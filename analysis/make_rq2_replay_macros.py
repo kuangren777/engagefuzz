@@ -6,6 +6,7 @@ No hand values: everything is computed from runs/rq2/*.json.
 """
 import json
 import os
+from efmt import F, a12, exact, mean  # noqa: E402,F401  one half-up formatter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RUNS = os.path.join(HERE, "..", "runs")
@@ -23,10 +24,26 @@ def m(k, v, out=L): out.append(f"\\newcommand{{\\{k}}}{{{v}}}")
 for tag, arms in (("Qwen", qa), ("Llama", la)):
     for arm in ("prox-v21", "binary"):
         a = arms[arm]
-        m(f"rqtwo{tag}{'ProxU' if arm == 'prox-v21' else 'Binary'}Fresh", f"{a['fresh_viol_mean']:.2f}")
+        m(f"rqtwo{tag}{'ProxU' if arm == 'prox-v21' else 'Binary'}Fresh", f"{F(exact(a['fresh_viol_mean'], a['n']), '.2f')}")
         m(f"rqtwo{tag}{'ProxU' if arm == 'prox-v21' else 'Binary'}Replay", str(a["replay_viol"]))
-m("rqtwoQwenTmapFresh", f"{ta['tmap-ladder']['fresh_viol_mean']:.2f}")
+m("rqtwoQwenTmapFresh", f"{F(exact(ta['tmap-ladder']['fresh_viol_mean'], ta['tmap-ladder']['n']), '.2f')}")
 m("rqtwoQwenTmapReplay", str(ta["tmap-ladder"]["replay_viol"]))
+# post-hoc (cold read 2026-10-11): distinct violating payloads, campaign success, cross-host unit dropped
+_R2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "runs", "rq2")
+_u = json.load(open(os.path.join(_R2, "rq2_unique.json")))["qwen3-8b-local"]
+m("rqtwoUniqProxMean", f"{F(exact(_u['arms']['prox-v21']['distinct_mean'], _u['arms']['prox-v21']['n']), '.2f')}")
+m("rqtwoUniqBinaryMean", f"{F(exact(_u['arms']['binary']['distinct_mean'], _u['arms']['binary']['n']), '.2f')}")
+m("rqtwoUniqBinaryA", f"{F(a12(_u['distinct']['binary']), '.3f')}")
+m("rqtwoUniqBinaryHolmTwo", f"{F(_u['distinct']['binary']['holm_two_sided'], '.2g')}")
+m("rqtwoSuccProxPct", f"{F(100 * exact(_u['arms']['prox-v21']['success_share'], _u['arms']['prox-v21']['n']), '.1f')}")
+m("rqtwoSuccBinaryPct", f"{F(100 * exact(_u['arms']['binary']['success_share'], _u['arms']['binary']['n']), '.1f')}")
+m("rqtwoSuccBinaryHolmTwo", f"{F(_u['any_viol']['binary']['holm_two_sided'], '.2f')}")
+import glob as _g
+_err = [json.loads(l) for f in _g.glob(os.path.join(_R2, "*_[0-9].jsonl")) if "tmap" not in f for l in open(f)]
+m("rqtwoErrN", str(sum(r.get("err") is not None for r in _err)))
+_x = json.load(open(os.path.join(_R2, "rq2_crosshost.json")))
+m("rqtwoXhostBinaryA", f"{F(a12(_x['viol']['binary']), '.3f')}")
+m("rqtwoXhostN", str(_x["viol"]["binary"]["n_pairs"]))
 open(os.path.join(PO, "rq2replay_numbers.tex"), "w").write("\n".join(L) + "\n")
 
 # ---- full T-MAP arm block (rq2tmap_numbers.tex) -----------------------------
@@ -36,21 +53,25 @@ pb = qt["primary_viol"]["binary"]
 pp = qt["primary_viol"]["prox-v21"]
 fb = qt["secondary_fresh"]["binary"]
 fp = qt["secondary_fresh"]["prox-v21"]
-m("rqtwoTmapViol", f"{ta['tmap-ladder']['viol_mean']:.2f}", T)
-m("rqtwoTmapMemo", f"{ta['tmap-ladder']['memo_hit']:.2f}", T)
-m("rqtwoTmapVsBinaryA", f"{pb['A12']:.3f}", T)
-m("rqtwoTmapVsBinaryHolm", f"{pb['holm_p']:.3g}", T)
-m("rqtwoTmapVsProxA", f"{pp['A12']:.3f}", T)
-m("rqtwoTmapVsProxHolm", f"{pp['holm_p']:.3g}", T)
-m("rqtwoTmapFreshVsBinaryA", f"{fb['A12']:.3f}", T)
-m("rqtwoTmapFreshVsBinaryP", f"{fb['p_two_sided']:.2g}", T)
+m("rqtwoTmapViol", f"{F(exact(ta['tmap-ladder']['viol_mean'], ta['tmap-ladder']['n']), '.2f')}", T)
+m("rqtwoTmapMemo", f"{F(exact(ta['tmap-ladder']['memo_hit'], ta['tmap-ladder']['n'] * t['budget']), '.2f')}", T)
+m("rqtwoTmapVsBinaryA", f"{F(a12(pb), '.3f')}", T)
+m("rqtwoTmapVsBinaryHolm", f"{F(pb['holm_p'], '.3g')}", T)
+m("rqtwoTmapVsProxA", f"{F(a12(pp), '.3f')}", T)
+m("rqtwoTmapVsProxHolm", f"{F(pp['holm_p'], '.3g')}", T)
+m("rqtwoTmapFreshVsBinaryA", f"{F(a12(fb), '.3f')}", T)
+m("rqtwoTmapFreshVsBinaryP", f"{F(fb['p_two_sided'], '.2g')}", T)
 m("rqtwoTmapN", str(pb["n_pairs"]), T)
-m("rqtwoTmapFreshVsProxA", f"{fp['A12']:.3f}", T)
-m("rqtwoTmapFreshVsProxHolm", f"{fp['holm_p']:.2f}", T)
+# proximity against T-MAP, the direction Table 5 uses in every row (complement of the tmap-ladder A12)
+m("rqtwoProxVsTmapA", f"{F(1 - a12(pp), '.3f')}", T)
+m("rqtwoProxVsTmapFreshA", f"{F(1 - a12(fp), '.3f')}", T)
+m("rqtwoTmapFreshVsProxA", f"{F(a12(fp), '.3f')}", T)
+m("rqtwoTmapFreshVsProxHolm", f"{F(fp['holm_p'], '.2f')}", T)
 # two-sided Holm over the two fresh-only comparisons (binary, proximity)
 p2s = sorted([(fb["p_two_sided"], "binary"), (fp["p_two_sided"], "prox")])
-adj2 = {b: min(1.0, (2 - k) * pv) for k, (pv, b) in enumerate(p2s)}
-adj2 = {b: max(adj2["binary"] if k0 == 0 else 0, adj2[b]) for k0, (pv, b) in enumerate(p2s)} if False else adj2
-m("rqtwoTmapFreshVsBinaryHolm", f"{adj2['binary']:.5g}", T)
+adj2, run = {}, 0.0
+for k, (pv, b) in enumerate(p2s):   # Holm step-down with the running maximum
+    run = max(run, min(1.0, (2 - k) * pv)); adj2[b] = run
+m("rqtwoTmapFreshVsBinaryHolm", f"{F(adj2['binary'], '.2g')}", T)
 open(os.path.join(PO, "rq2tmap_numbers.tex"), "w").write("\n".join(T) + "\n")
 print("wrote rq2replay_numbers.tex + rq2tmap_numbers.tex")

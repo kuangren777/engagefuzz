@@ -1,0 +1,55 @@
+{
+ "viol": {
+  "random": {
+   "A12": 0.4230769230769231,
+   "p_one_sided": 0.8662944326167936,
+   "holm_one_sided": 1.0,
+   "p_two_sided": 0.26741113476641276,
+   "n_pairs": 39
+  },
+  "binary": {
+   "A12": 0.3076923076923077,
+   "p_one_sided": 0.9998024365710113,
+   "holm_one_sided": 1.0,
+   "p_two_sided": 0.0003951268579773071,
+   "n_pairs": 39
+  },
+  "coverage": {
+   "A12": 0.41025641025641024,
+   "p_one_sided": 0.8771646305076376,
+   "holm_one_sided": 1.0,
+   "p_two_sided": 0.2456707389847248,
+   "n_pairs": 39
+  }
+ },
+ "fresh_viol": {
+  "random": {
+   "A12": 0.34615384615384615,
+   "p_one_sided": 0.9928434665024142,
+   "holm_one_sided": 1.0,
+   "p_two_sided": 0.014313066995171674,
+   "n_pairs": 39
+  },
+  "binary": {
+   "A12": 0.28205128205128205,
+   "p_one_sided": 0.9978496331043469,
+   "holm_one_sided": 1.0,
+   "p_two_sided": 0.004300733791306054,
+   "n_pairs": 39
+  },
+  "coverage": {
+   "A12": 0.4358974358974359,
+   "p_one_sided": 0.9246338595060355,
+   "holm_one_sided": 1.0,
+   "p_two_sided": 0.15073228098792907,
+   "n_pairs": 39
+  }
+ },
+ "dropped": [
+  "('random', 2, ('travel', 'user_task_17', 'injection_task_5', 'both'))",
+  "('tmap-ladder', 2, ('travel', 'user_task_17', 'injection_task_5', 'both'))",
+  "('prox-v21', 2, ('travel', 'user_task_17', 'injection_task_5', 'both'))",
+  "('coverage', 2, ('travel', 'user_task_17', 'injection_task_5', 'both'))",
+  "('binary', 2, ('travel', 'user_task_17', 'injection_task_5', 'both'))"
+ ]
+}

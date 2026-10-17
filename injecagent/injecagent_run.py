@@ -4,7 +4,7 @@ applies the EngageFuzz proximity ladder to each run.
 
 python3 injecagent_run.py --model llama31-8b-local --base-url http://127.0.0.1:8023/v1\
     --n-cases 100 --reps 10 --out ../runs/rq4/injecagent_llama.jsonl [--cap 16] [--temp 1.0]
-API models use --base-url $CAMEL_HUB_URL/v1 (you set CAMEL_HUB_URL) and --api-key-env CAMEL_HUB_KEY.
+API models use --base-url $LLM_GATEWAY_URL/v1 (you set LLM_GATEWAY_URL) and --api-key-env LLM_GATEWAY_KEY.
 """
 import argparse
 import json

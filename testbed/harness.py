@@ -49,11 +49,11 @@ def _load_env():
 
 
 _load_env()
-# OpenAI-compatible gateway for API models (judge, frontier models). You set CAMEL_HUB_URL and
-# CAMEL_HUB_KEY yourself; there is no default. Pure local-vLLM runs never call it.
-_HUB = os.environ.get("CAMEL_HUB_URL", "").rstrip("/")
+# OpenAI-compatible gateway for API models (judge, frontier models). You set LLM_GATEWAY_URL and
+# LLM_GATEWAY_KEY yourself; there is no default. Pure local-vLLM runs never call it.
+_HUB = os.environ.get("LLM_GATEWAY_URL", "").rstrip("/")
 BASE_URL = (_HUB + "/v1") if _HUB else "http://127.0.0.1:9/v1"  # unreachable placeholder when unset
-CLIENT = openai.OpenAI(base_url=BASE_URL, api_key=os.environ.get("CAMEL_HUB_KEY", "none"), timeout=120, max_retries=4)
+CLIENT = openai.OpenAI(base_url=BASE_URL, api_key=os.environ.get("LLM_GATEWAY_KEY", "none"), timeout=120, max_retries=4)
 
 # locally self-hosted models (vLLM on a local GPU server, optionally via ssh tunnel). The API gateway silently
 # drops the `tools` parameter for its open-weight channels, so small models must be served here.

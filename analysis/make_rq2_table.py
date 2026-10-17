@@ -5,12 +5,18 @@ python3 make_rq2_table.py <model1_paired.json> [<model2_paired.json> ...] \
 import json
 import os
 import sys
+from efmt import F, a12, exact, mean  # noqa: E402,F401  one half-up formatter
 
 ARMS = ["prox-v21", "random", "binary", "coverage"]
 ARMNAME = {"prox-v21": "proximity (ours)", "random": "random", "binary": "binary", "coverage": "coverage"}
 TAG = {"qwen3-8b-local": "QwenEightB", "llama31-8b-local": "Llama"}
 ARMTOK = {"prox-v21": "proxU", "random": "random", "binary": "binary", "coverage": "coverage"}  # digit-free macro tokens
 DISP = {"qwen3-8b-local": "Qwen3-8B", "llama31-8b-local": "Llama-3.1-8B"}
+
+
+def r2(a):
+    """Violations per campaign: an exact mean over the arm's units, rounded half up once."""
+    return F(exact(a["viol_mean"], a["n"]), ".2f")
 
 
 def main():
@@ -32,11 +38,11 @@ def main():
             continue
         d = data[mk]; t = TAG[mk]
         for arm in ARMS:
-            m(f"rqtwo{t}{ARMTOK[arm]}Viol", f"{d['arms'][arm]['viol_mean']:.2f}")
+            m(f"rqtwo{t}{ARMTOK[arm]}Viol", r2(d['arms'][arm]))
         for b in ["random", "binary", "coverage"]:
             pv = d["tests"]["primary_viol"].get(b, {})
-            m(f"rqtwo{t}{ARMTOK[b]}A", f"{pv.get('A12', float('nan')):.3f}")
-            m(f"rqtwo{t}{ARMTOK[b]}Holm", f"{pv.get('holm_p', float('nan')):.3g}")
+            m(f"rqtwo{t}{ARMTOK[b]}A", f"{F(a12(pv) if pv else float('nan'), '.3f')}")
+            m(f"rqtwo{t}{ARMTOK[b]}Holm", f"{F(pv.get('holm_p', float('nan')), '.3g')}")
         # post-hoc two-sided Holm over the 3 baselines (reported against binary)
         p2 = {b: d["tests"]["primary_viol"].get(b, {}).get("p_two_sided", 1.0)
               for b in ["random", "binary", "coverage"]}
@@ -46,34 +52,33 @@ def main():
         for k, b in enumerate(order):
             run = max(run, min(1.0, (3 - k) * p2[b]))
             adj[b] = run
-        m(f"rqtwo{t}binaryPostHolm", f"{adj['binary']:.5g}")
+        m(f"rqtwo{t}binaryPostHolm", f"{F(adj['binary'], '.2g')}")
         for b in ["random", "binary", "coverage"]:
             fv = d["tests"]["secondary_fresh"].get(b, {})
-            m(f"rqtwo{t}{ARMTOK[b]}FreshA", f"{fv.get('A12', float('nan')):.3f}")
-        m(f"rqtwo{t}{ARMTOK['binary']}Replay", str(d["arms"]["binary"]["replay_viol"]))
-        m(f"rqtwo{t}{ARMTOK['prox-v21']}Replay", str(d["arms"]["prox-v21"]["replay_viol"]))
-        m(f"rqtwo{t}Verdict", d["C1_verdict"])
+            m(f"rqtwo{t}{ARMTOK[b]}FreshA", f"{F(a12(fv) if fv else float('nan'), '.3f')}")
+        # replay counts are generated once, in make_rq2_replay_macros.py (rqtwo<Model><Arm>Replay)
         verdicts.append((DISP[mk], d["C1_verdict"]))
-        px = d["arms"]["prox-v21"]
-        tm = r"\rqtwoTmapViol{}" if mk == "qwen3-8b-local" else "--"
-        rows.append(f"{DISP[mk]} & {px['viol_mean']:.2f} & "
-                    f"{d['arms']['random']['viol_mean']:.2f} & {d['arms']['binary']['viol_mean']:.2f} & "
-                    f"{d['arms']['coverage']['viol_mean']:.2f} & {tm} & "
-                    f"{d['tests']['primary_viol']['random']['A12']:.3f} / "
-                    f"{d['tests']['primary_viol']['binary']['A12']:.3f} / "
-                    f"{d['tests']['primary_viol']['coverage']['A12']:.3f} \\\\")
-    m("rqtwoVerdictSummary", ", ".join(f"{n} {v}" for n, v in verdicts))
+        V = lambda a: f"\\rqtwo{t}{ARMTOK[a]}Viol{{}}"
+        rows.append(f"{DISP[mk]} & proximity (ours) & {V('prox-v21')} & -- & -- & -- \\\\")
+        for b in ("random", "binary", "coverage"):
+            rows.append(f" & {b} & {V(b)} & \\rqtwo{t}{ARMTOK[b]}A{{}} & \\rqtwo{t}{ARMTOK[b]}FreshA{{}} & \\rqtwo{t}{ARMTOK[b]}Holm{{}} \\\\")
+        if mk == "qwen3-8b-local":
+            rows.append(r" & T-MAP ladder & \rqtwoTmapViol{} & \rqtwoProxVsTmapA{} & \rqtwoProxVsTmapFreshA{} & \rqtwoTmapVsProxHolm{} \\")
+        rows.append(r"\midrule")
     tmap = None
     tj = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "runs", "rq2", "rq2_tmap_qwen.json")
     if os.path.exists(tj):
         tmap = json.load(open(tj))["arms"]["tmap-ladder"]["viol_mean"]
+    if rows and rows[-1] == r"\midrule":
+        rows = rows[:-1]
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{RQ2 closed-loop reward comparison at an equal budget. We report violations per "
-           r"campaign for each reward arm and the paired effect size $\hat A_{12}$ of proximity "
-           r"against random, binary and coverage. A value above 0.5 favours proximity and 0.5 is a tie. "
-           r"The T-MAP column is the T-MAP ladder arm, run on Qwen3-8B only.}",
-           r"\label{tab:rq2}", r"\begin{tabular}{lccccc c}", r"\toprule",
-           r"Model & proximity $\uparrow$ & random $\uparrow$ & binary $\uparrow$ & coverage $\uparrow$ & T-MAP $\uparrow$ & $\hat A_{12}$ vs r/b/c $\uparrow$ \\",
+           r"\caption{RQ2 closed-loop reward comparison at an equal budget. Violations per campaign for each "
+           r"reward \varword{}. In each baseline row $\hat A_{12}$ is the paired effect size of proximity against that \varword{}, "
+           r"over all executions and over fresh executions not served from the memo. Holm $p$ is the "
+           r"pre-registered one-sided test. A value of $\hat A_{12}$ above 0.5 favours proximity and 0.5 means neither \varword{} wins more often. "
+           r"The T-MAP ladder runs on Qwen3-8B only. In its row a value of $\hat A_{12}$ below 0.5 favours the T-MAP ladder. Its Holm $p$ tests the T-MAP ladder over proximity, corrected over its two comparisons with binary success and proximity.}",
+           r"\label{tab:rq2}", r"\begin{tabular}{llcccc}", r"\toprule",
+           r"Model & \Varword{} & violations $\uparrow$ & $\hat A_{12}$ $\uparrow$ & fresh $\hat A_{12}$ $\uparrow$ & Holm $p$ $\downarrow$ \\",
            r"\midrule"]
     tab += rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     if macros:

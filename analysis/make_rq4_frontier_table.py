@@ -3,6 +3,7 @@ python3 make_rq4_frontier_table.py -> out/rq4_frontier_table.tex
 """
 import json
 import os
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "..", "runs", "rq4", "injecagent_frontier_density.json")
@@ -12,7 +13,7 @@ d = json.load(open(SRC))
 rows = []
 for m in sorted(d, key=lambda k: -d[k]["asr"]):
     v = d[m]
-    rows.append(f"{m} & {v['n']} & {100 * v['asr']:.1f}\\% & {100 * v['l2plus_nonviol']:.1f}\\% " + r"\\")
+    rows.append(f"{m} & {v['n']} & {F(100 * exact(v['asr'], v['n']), '.1f')}\\% & {F(100 * exact(v['l2plus_nonviol'], v['n']), '.1f')}\\% " + r"\\")
 tab = [r"\begin{table}[t]\centering",
        r"\caption{InjecAgent frontier density per model. Runs per model, attack-success rate and the "
        r"share of binary-failure runs at level two or higher under the pre-registered ladder.}",

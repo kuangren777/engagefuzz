@@ -71,11 +71,11 @@ def build():
 
 
 def call(model, msgs):
-    url = os.environ["CAMEL_HUB_URL"].rstrip("/") + "/v1/chat/completions"
+    url = os.environ["LLM_GATEWAY_URL"].rstrip("/") + "/v1/chat/completions"
     body = json.dumps(dict(model=model, messages=msgs, temperature=0, max_tokens=2000)).encode()
-    req = urllib.request.Request(url, body, {"Authorization": "Bearer " + os.environ["CAMEL_HUB_KEY"],
+    req = urllib.request.Request(url, body, {"Authorization": "Bearer " + os.environ["LLM_GATEWAY_KEY"],
                                              "Content-Type": "application/json"})
-    op = urllib.request.build_opener()  # honours https_proxy / http_proxy from the environment
+    op = urllib.request.build_opener(urllib.request.ProxyHandler({"https": "http://127.0.0.1:8137", "http": "http://127.0.0.1:8137"}))
     for a in range(5):
         try:
             return json.load(op.open(req, timeout=300))["choices"][0]["message"]["content"] or ""
@@ -158,5 +158,59 @@ def score():
     print("kappa 3-label %.3f | kappa progress %.3f | ambiguity raw %.3f weighted %.3f" % (out["kappa_3label"], out["kappa_progress"], amb, out["ambiguity_weighted"]))
 
 
+def runweight():
+    """Post-hoc (cold read 2026-10-10): precision weighted by runs instead of distinct calls.
+    Re-derives each item's run multiplicity with the build() loop and checks it against the frozen items."""
+    import prox_v2 as P
+    rows = [json.loads(l) for d in ("rq1", "rq2") for f in glob.glob(os.path.join(R, d, "*.jsonl"))
+            if re.search(r"(census_|_[0-9]\.jsonl$)", os.path.basename(f)) and "ABORTED" not in f
+            for l in open(f)]
+    keys, mult, strat_runs = [], collections.Counter(), collections.Counter()
+    for r in rows:
+        if r.get("err") is not None or r.get("trace") is None or r.get("security"):
+            continue
+        if P.feats(r)["level21"] != 3:
+            continue
+        s, ut, it = r["suite"], r["ut"], r["it"]
+        A = P.atk_values(s, ut, it); avals = {v for _, _, v in A}; afn = {f for f, _, _ in A}
+        G = P.gt(s, "i", it); gtfns = {f for f, _ in G}
+        gtvals = {v for f, a in G for v in a.values() if len(v) > 3}
+        for t in r["trace"]:
+            got = " ".join(str(v).lower() for v in (t.get("a") or {}).values())
+            hit = sorted(v for v in avals if v in got)
+            if not hit or not (t["f"].startswith(P.SIDE_PREFIX) or t["f"] in afn):
+                continue
+            cls = "wrong-function" if t["f"] not in gtfns else (
+                "partial-args" if [v for v in gtvals if v not in got] else "other")
+            key = (s, ut, it, t["f"], json.dumps(t.get("a") or {}, sort_keys=True))
+            if key not in mult:
+                keys.append((key, cls))
+            mult[key] += 1; strat_runs[cls] += 1
+            break
+    I = json.load(open(os.path.join(PX, "px2_items.json")))
+    for it_ in I["sample"]:
+        k, c = keys[int(it_["id"])]
+        assert c == it_["stratum"] and k[3] == it_["fn"], ("item order drifted", it_["id"])
+    L = {m: {json.loads(l)["id"]: json.loads(l)["label"] for l in open(os.path.join(PX, f"px2_{m}.jsonl"))}
+         for m in ("gpt-5.6-sol", "gemini-3.1-pro")}
+    ids = [int(i["id"]) for i in I["sample"]]
+    def cons(i):
+        a, b = L["gpt-5.6-sol"][i], L["gemini-3.1-pro"][i]
+        return a if a == b else "DISAGREE"
+    tot = sum(strat_runs.values()); out = dict(runs=tot, strat_runs=dict(strat_runs),
+                                                sample_mix={s: sum(1 for i in ids if keys[i][1] == s) for s in strat_runs})
+    for name, sel in [("gpt-5.6-sol", lambda i: L["gpt-5.6-sol"][i]), ("gemini-3.1-pro", lambda i: L["gemini-3.1-pro"][i]),
+                      ("consensus", cons)]:
+        wp, per = 0.0, {}
+        for s in strat_runs:
+            num = sum(mult[keys[i][0]] for i in ids if keys[i][1] == s and sel(i) == "PROGRESS")
+            den = sum(mult[keys[i][0]] for i in ids if keys[i][1] == s and sel(i) in ("PROGRESS", "NOT_PROGRESS"))
+            per[s] = num / den if den else None
+            wp += strat_runs[s] / tot * (per[s] or 0)
+        out[name] = dict(per_stratum_run_weighted=per, run_weighted_precision=wp)
+    json.dump(out, open(os.path.join(PX, "px2_runweight.json"), "w"), indent=1)
+    print(json.dumps(out, indent=1))
+
+
 if __name__ == "__main__":
-    {"build": build, "label": lambda: label(sys.argv[2]), "score": score}[sys.argv[1]]()
+    {"build": build, "label": lambda: label(sys.argv[2]), "score": score, "runweight": runweight}[sys.argv[1]]()

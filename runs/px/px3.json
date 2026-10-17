@@ -1,0 +1,63 @@
+{
+ "units": 40,
+ "arms": {
+  "binary": {
+   "executions": 1600,
+   "errors": 0,
+   "memo_hits": 3,
+   "distinct_mean": 6.275,
+   "viol_mean": 6.325,
+   "success_share": 0.825,
+   "km_median_first": 4
+  },
+  "prox-v21": {
+   "executions": 1600,
+   "errors": 0,
+   "memo_hits": 3,
+   "distinct_mean": 3.45,
+   "viol_mean": 3.45,
+   "success_share": 0.825,
+   "km_median_first": 6
+  },
+  "tmap-ladder": {
+   "executions": 1600,
+   "errors": 0,
+   "memo_hits": 5,
+   "distinct_mean": 5.825,
+   "viol_mean": 5.85,
+   "success_share": 0.9,
+   "km_median_first": 6
+  }
+ },
+ "primary": {
+  "prox-v21_vs_binary": {
+   "A12": 0.3125,
+   "p_two_sided": 0.001545429399715841,
+   "holm": 0.004179989878238448
+  },
+  "tmap-ladder_vs_binary": {
+   "A12": 0.5625,
+   "p_two_sided": 0.6273269880432142,
+   "holm": 0.6273269880432142
+  },
+  "tmap-ladder_vs_prox-v21": {
+   "A12": 0.725,
+   "p_two_sided": 0.0013933299594128161,
+   "holm": 0.004179989878238448
+  }
+ },
+ "secondary": {
+  "prox-v21_vs_binary": {
+   "logrank_chi2": 0.008323114696526067,
+   "p": 0.9273089590174162
+  },
+  "tmap-ladder_vs_binary": {
+   "logrank_chi2": 0.007197537029181358,
+   "p": 0.9323899448421911
+  },
+  "tmap-ladder_vs_prox-v21": {
+   "logrank_chi2": 0.1051493548790828,
+   "p": 0.7457355888499471
+  }
+ }
+}

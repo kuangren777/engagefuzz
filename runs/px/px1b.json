@@ -1,0 +1,23 @@
+{
+ "runs": 210,
+ "fires": 0,
+ "fp_rate": 0.0,
+ "per_suite": {
+  "banking": {
+   "runs": 70,
+   "fires": 0,
+   "rate": 0.0
+  },
+  "slack": {
+   "runs": 70,
+   "fires": 0,
+   "rate": 0.0
+  },
+  "travel": {
+   "runs": 70,
+   "fires": 0,
+   "rate": 0.0
+  }
+ },
+ "top_values": []
+}

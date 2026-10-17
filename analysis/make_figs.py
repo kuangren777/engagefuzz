@@ -42,13 +42,14 @@ def rq3():
     for r in R:
         r["_l21"] = ef.prox_v2.feats(r)["level21"]
     nv = [r for r in R if not r["security"]]
-    groups = {"frontier (ASR 1.1%)": nv}
+    asr = 100 * sum(bool(r["security"]) for r in R) / max(1, len(R))
+    groups = {f"six frontier models, pooled (ASR {asr:.1f}%)": nv}
     import collections
     fig, ax = plt.subplots(figsize=(3.2, 2.6))
     colors = ["#d9d9d9", "#bdbdbd", "#fdae6b", "#e6550d", "#a50f15"]
     bottoms = [0.0] * len(groups)
     labels = list(groups)
-    for lvl in range(5):
+    for lvl in range(4):   # binary failures cannot be at level four
         fr = [sum(r["_l21"] == lvl for r in groups[g]) / max(1, len(groups[g])) for g in labels]
         ax.bar(labels, fr, bottom=bottoms, color=colors[lvl], label=f"level {lvl}")
         bottoms = [b + f for b, f in zip(bottoms, fr)]

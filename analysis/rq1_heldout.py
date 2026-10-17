@@ -14,6 +14,7 @@ from scipy.stats import spearmanr
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "engine"))
 import engagefuzz as ef  # noqa: E402
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 MODELS = [("qwen3-8b-yf", "QwenEightB"), ("qwen3-32b-local", "QwenThirtyTwoB"),
           ("llama31-8b-local", "Llama"), ("granite31-8b-local", "Granite")]
@@ -42,10 +43,10 @@ def main():
         rr = spearmanr(X, Y) if len(X) > 2 and len(set(X)) > 1 and len(set(Y)) > 1 else (float("nan"), float("nan"))
         sig = rr[1] < 0.05 and rr[0] > 0
         npass += sig
-        m(f"rqoneho{tag}Rho", f"{rr[0]:.3f}"); m(f"rqoneho{tag}P", f"{rr[1]:.3g}")
+        m(f"rqoneho{tag}Rho", f"{F(rr[0], '.3f')}"); m(f"rqoneho{tag}P", f"{F(rr[1], '#.3g')}"); m(f"rqoneho{tag}N", len(X))
         mx, my = (st.mean(X), st.mean(Y)) if X else (0, 0)
         PX += [a - mx for a in X]; PY += [b - my for b in Y]
-        print(f"{mk:20} held-out rho={rr[0]:.3f} p={rr[1]:.3g} n={len(X)} sig={sig}")
+        print(f"{mk:20} held-out rho={F(rr[0], '.3f')} p={F(rr[1], '.3g')} n={len(X)} sig={sig}")
     # robustness: 300 random half-splits per unit, pooled model-centred Spearman each
     import random as _rnd
     allcells = []
@@ -77,13 +78,13 @@ def main():
         if rr2[0] == rr2[0]:
             dist.append(rr2[0])
     dist.sort()
-    m("rqonehoRandMed", f"{dist[len(dist)//2]:.3f}")
-    m("rqonehoRandLo", f"{dist[int(0.025*len(dist))]:.3f}"); m("rqonehoRandHi", f"{dist[int(0.975*len(dist))-1]:.3f}")
-    print(f"random-split pooled rho: median={dist[len(dist)//2]:.3f} 95%=[{dist[int(0.025*len(dist))]:.3f},{dist[int(0.975*len(dist))-1]:.3f}]")
+    m("rqonehoRandMed", f"{F(dist[len(dist)//2], '.3f')}")
+    m("rqonehoRandLo", f"{F(dist[int(0.025*len(dist))], '.3f')}"); m("rqonehoRandHi", f"{F(dist[int(0.975*len(dist))-1], '.3f')}")
+    print(f"random-split pooled rho: median={F(dist[len(dist)//2], '.3f')} 95%=[{F(dist[int(0.025*len(dist))], '.3f')},{F(dist[int(0.975*len(dist))-1], '.3f')}]")
     pr = spearmanr(PX, PY)
-    m("rqonehoPooledRho", f"{pr[0]:.3f}"); m("rqonehoPooledP", f"{pr[1]:.2g}"); m("rqonehoPass", str(npass))
+    m("rqonehoPooledRho", f"{F(pr[0], '.3f')}"); m("rqonehoPooledP", f"{F(pr[1], '.2g')}"); m("rqonehoPass", str(npass)); m("rqonehoPooledN", len(PX))
     open(os.path.join(HERE, "..", "out", "rq1ho_numbers.tex"), "w").write("\n".join(L) + "\n")
-    print(f"pooled held-out rho={pr[0]:.3f} p={pr[1]:.3g} | per-model sig {npass}/4")
+    print(f"pooled held-out rho={F(pr[0], '.3f')} p={F(pr[1], '.3g')} | per-model sig {npass}/4")
 
 
 if __name__ == "__main__":

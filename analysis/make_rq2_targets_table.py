@@ -8,6 +8,8 @@ import json
 import os
 import re
 import statistics as st
+from fractions import Fraction
+from efmt import F, exact, mean  # noqa: E402,F401  one half-up formatter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "out", "rq2_targets_table.tex")
@@ -18,7 +20,8 @@ ARMS = ["prox-v21", "random", "binary", "coverage", "tmap-ladder"]
 
 
 def a12(x, y):
-    return sum((a > b) + 0.5 * (a == b) for a, b in zip(x, y)) / len(x)
+    """Exact A12: a win counts 2, a tie 1, over 2 n."""
+    return Fraction(sum(2 * (a > b) + (a == b) for a, b in zip(x, y)), 2 * len(x))
 
 
 def main():
@@ -38,18 +41,18 @@ def main():
             cells = []
             for arm in ARMS:
                 xs = [vi for (a, _), vi in v.items() if a == arm]
-                cells.append(f"{st.mean(xs):.2f}" if xs else "--")
+                cells.append(f"{F(mean(xs), '.2f')}" if xs else "--")
             px = [vi for (a, _), vi in sorted(v.items()) if a == "prox-v21"]
             bn = [vi for (a, sd), vi in sorted(v.items()) if a == "binary" and ("prox-v21", sd) in v]
-            A = f"{a12(px, bn):.3f}" if px and bn and len(px) == len(bn) else "--"
-            rows.append(f"{DISP[mk]} & {s}:{ut.split('_')[-1]}/{it.split('_')[-1]} & " + " & ".join(cells) + f" & {A} " + r"\\")
+            A = f"{F(a12(px, bn), '.3f')}" if px and bn and len(px) == len(bn) else "--"
+            rows.append(f"{DISP[mk]} & {s}:{ut.split('_')[-1]}/{it.split('_')[-1]} & {'combined' if dfn == 'both' else 'none'} & " + " & ".join(cells) + f" & {A} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{Per-target view of RQ2 (exploratory). Mean violations per campaign for each "
-           r"reward arm on every selected target, with the paired $\hat A_{12}$ of proximity against "
-           r"binary success over the five seeds. The T-MAP ladder arm runs on Qwen3-8B only. A dash "
-           r"marks an arm that was not run on that model.}",
-           r"\label{tab:rq2targets}", r"\begin{tabular}{llccccc c}", r"\toprule",
-           r"Model & Target & prox $\uparrow$ & rand $\uparrow$ & binary $\uparrow$ & cov $\uparrow$ & T-MAP $\uparrow$ & $\hat A_{12}$ p/b $\uparrow$ \\", r"\midrule"] + \
+           r"\caption{Per-target view of RQ2, post-hoc. Mean violations per campaign for each "
+           r"reward \varword{} on every selected target, with the paired $\hat A_{12}$ of proximity against "
+           r"binary success over the five seeds. The T-MAP ladder runs on Qwen3-8B only. A dash "
+           r"marks a \varword{} that was not run on that model. Defense gives the condition under which the target was selected and run, either none or the combined AgentDojo prompt-level defense.}",
+           r"\label{tab:rq2targets}", r"\begin{tabular}{lllccccc c}", r"\toprule",
+           r"Model & Target & Defense & prox $\uparrow$ & rand $\uparrow$ & binary $\uparrow$ & cov $\uparrow$ & T-MAP $\uparrow$ & $\hat A_{12}$ p/b $\uparrow$ \\", r"\midrule"] + \
           rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     open(OUT, "w").write("\n".join(tab) + "\n")
     print(f"rq2_targets_table: {len(rows)} target rows")

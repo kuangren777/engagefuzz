@@ -1,16 +1,16 @@
 \begin{table}[t]\centering
-\caption{AgentDojo frontier density per model. Runs, attack-success rate and the level-three count and share among binary-failure runs, under the proximity ladder.}
+\caption{AgentDojo frontier density per model. Runs, attack-success rate and the level-three count and share among binary-failure runs, under the proximity ladder. The collision floor is the mean share of the suite's other injection tasks whose values fire the level-three rule on a failed run. The $p$ column is the one-sided sign-flip permutation test of share above floor with the 15 target pairs of a model as clusters. The floor here is the mean over failed runs. The pre-registered collision baseline instead pools all pairings of a failed run with an unseen injection task. Over the six models it gives \pxCollFrontier\%, a rate pooled over pairings. It weights each run by the number of other injection tasks in its suite, while the per-run floor weights runs equally. The main-text test clusters the 15 target pairs across models. Clustering by model and target pair gives a pooled $p$ of \pxFloorMtP{} and clustering by model gives \pxFloorModP. Treating runs as independent would give a pooled $p$ of \pxFloorP{} with a 95\% interval of \pxFloorLo{} to \pxFloorHi{} percentage points for the difference between the level-three share and the floor, which overstates the effective sample.}
 \label{tab:rq3pm}
-\begin{tabular}{lcccc}
+\begin{tabular}{lccccccc}
 \toprule
-Model & runs & ASR & level-3 runs & share of failures $\uparrow$ \\
+Model & runs & ASR & failures & level-3 runs & share of failures $\uparrow$ & collision floor $\downarrow$ & $p$ $\downarrow$ \\
 \midrule
-claude-sonnet-5 & \rqthreePmClaudeN{} & \rqthreePmClaudeASR\% & \rqthreePmClaudeLthree{} & \rqthreePmClaudeLthreePct\% \\
-gpt-5.6-sol & \rqthreePmGptSolN{} & \rqthreePmGptSolASR\% & \rqthreePmGptSolLthree{} & \rqthreePmGptSolLthreePct\% \\
-gemini-3.1-pro & \rqthreePmGeminiN{} & \rqthreePmGeminiASR\% & \rqthreePmGeminiLthree{} & \rqthreePmGeminiLthreePct\% \\
-kimi-k3 & \rqthreePmKimiN{} & \rqthreePmKimiASR\% & \rqthreePmKimiLthree{} & \rqthreePmKimiLthreePct\% \\
-glm-5.3 & \rqthreePmGlmN{} & \rqthreePmGlmASR\% & \rqthreePmGlmLthree{} & \rqthreePmGlmLthreePct\% \\
-deepseek-v4.1-flash & \rqthreePmDeepseekN{} & \rqthreePmDeepseekASR\% & \rqthreePmDeepseekLthree{} & \rqthreePmDeepseekLthreePct\% \\
+claude-sonnet-5 & \rqthreePmClaudeN{} & \rqthreePmClaudeASR\% & \rqthreePmClaudeNonviol{} & \rqthreePmClaudeLthree{} & \rqthreePmClaudeLthreePct\% & \pxFloorPmClaudePct\% & \pxFloorPmClaudeP \\
+gpt-5.6-sol & \rqthreePmGptSolN{} & \rqthreePmGptSolASR\% & \rqthreePmGptSolNonviol{} & \rqthreePmGptSolLthree{} & \rqthreePmGptSolLthreePct\% & \pxFloorPmGptSolPct\% & \pxFloorPmGptSolP \\
+gemini-3.1-pro & \rqthreePmGeminiN{} & \rqthreePmGeminiASR\% & \rqthreePmGeminiNonviol{} & \rqthreePmGeminiLthree{} & \rqthreePmGeminiLthreePct\% & \pxFloorPmGeminiPct\% & \pxFloorPmGeminiP \\
+kimi-k3 & \rqthreePmKimiN{} & \rqthreePmKimiASR\% & \rqthreePmKimiNonviol{} & \rqthreePmKimiLthree{} & \rqthreePmKimiLthreePct\% & \pxFloorPmKimiPct\% & \pxFloorPmKimiP \\
+glm-5.3 & \rqthreePmGlmN{} & \rqthreePmGlmASR\% & \rqthreePmGlmNonviol{} & \rqthreePmGlmLthree{} & \rqthreePmGlmLthreePct\% & \pxFloorPmGlmPct\% & \pxFloorPmGlmP \\
+deepseek-v4.1-flash & \rqthreePmDeepseekN{} & \rqthreePmDeepseekASR\% & \rqthreePmDeepseekNonviol{} & \rqthreePmDeepseekLthree{} & \rqthreePmDeepseekLthreePct\% & \pxFloorPmDeepseekPct\% & \pxFloorPmDeepseekP \\
 \bottomrule
 \end{tabular}
 \end{table}
