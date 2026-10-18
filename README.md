@@ -100,6 +100,8 @@ export LLM_GATEWAY_KEY=none                        # any value, analysis makes n
 | `make_figs.py` | `python3 make_figs.py` | `out/figs/rq1_levelrate.pdf`, `rq3_density.pdf` |
 | `make_figs2.py` | `python3 make_figs2.py` | `out/figs/rq2_box.pdf`, `rq2_fresh.pdf`, `rq4_injeccurve.pdf`, `rq4_frontierbars.pdf` |
 | `rq1_samepop.py` | `python3 rq1_samepop.py` | same-population rho for SI Table S3, `out/rq1samepop_table.tex`. Rewrites `runs/px/rq1_samepop.json` |
+| `empty_trace.py` | `python3 empty_trace.py` | runs without a tool call, SI Table S4, `out/emptytrace_table.tex` and `out/empty_numbers.tex` |
+| `gateway_sens.py` | `python3 gateway_sens.py` | RQ3 and labeller check without gpt-5.6-sol and the SI table of gateway calls with an added prefix, `out/gateway_numbers.tex` and `out/gateway_table.tex`, from `runs/px/rq3_floor_nosol.json` and `runs/px/gateway_quantiles_release.json` |
 | `efmt.py`, `fmtnum.py` | imported | the single number formatter: every rendered number is rounded once, half up, with count ratios passed as exact fractions |
 | `prox_v2.py` | imported | proximity ladder v2.1 grader used by every RQ |
 | `rq1_cluster.py`, `rq1_demote.py`, `rq1_heldout_undef.py` | `python3 <script>` | RQ1 sensitivity checks (target as cluster, demoted wrong-function runs, undefended held-out units). Write `runs/px/rq1_{cluster,demote,heldout_undef}.json` |

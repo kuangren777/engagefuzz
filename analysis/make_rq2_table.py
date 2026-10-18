@@ -62,8 +62,7 @@ def main():
         rows.append(f"{DISP[mk]} & proximity (ours) & {V('prox-v21')} & -- & -- & -- \\\\")
         for b in ("random", "binary", "coverage"):
             rows.append(f" & {b} & {V(b)} & \\rqtwo{t}{ARMTOK[b]}A{{}} & \\rqtwo{t}{ARMTOK[b]}FreshA{{}} & \\rqtwo{t}{ARMTOK[b]}Holm{{}} \\\\")
-        if mk == "qwen3-8b-local":
-            rows.append(r" & T-MAP ladder & \rqtwoTmapViol{} & \rqtwoProxVsTmapA{} & \rqtwoProxVsTmapFreshA{} & \rqtwoTmapVsProxHolm{} \\")
+        # T-MAP ladder row moved to the Supplementary Information: its judge is called through the gateway
         rows.append(r"\midrule")
     tmap = None
     tj = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "runs", "rq2", "rq2_tmap_qwen.json")
@@ -75,8 +74,8 @@ def main():
            r"\caption{RQ2 closed-loop reward comparison at an equal budget. Violations per campaign for each "
            r"reward \varword{}. In each baseline row $\hat A_{12}$ is the paired effect size of proximity against that \varword{}, "
            r"over all executions and over fresh executions not served from the memo. Holm $p$ is the "
-           r"pre-registered one-sided test. A value of $\hat A_{12}$ above 0.5 favours proximity and 0.5 means neither \varword{} wins more often. "
-           r"The T-MAP ladder runs on Qwen3-8B only. In its row a value of $\hat A_{12}$ below 0.5 favours the T-MAP ladder. Its Holm $p$ tests the T-MAP ladder over proximity, corrected over its two comparisons with binary success and proximity.}",
+           r"pre-registered one-sided test. A value of $\hat A_{12}$ above 0.5 favours proximity and 0.5 means neither \varword{} wins more often. The fresh-execution counts differ between reward \varwords{}, as Table~\ref{tab:emptytrace} shows."
+           r"}",
            r"\label{tab:rq2}", r"\begin{tabular}{llcccc}", r"\toprule",
            r"Model & \Varword{} & violations $\uparrow$ & $\hat A_{12}$ $\uparrow$ & fresh $\hat A_{12}$ $\uparrow$ & Holm $p$ $\downarrow$ \\",
            r"\midrule"]

@@ -5,6 +5,7 @@ fire the level-three rule on this trace (px1a_collision.py rule: values of the r
 d = own - floor. Paired test of mean(d) > 0 by sign-flip permutation and a run-level bootstrap CI,
 pooled and per model.
 python3 rq3_floor_test.py -> runs/px/rq3_floor.json
+python3 rq3_floor_test.py --exclude gpt-5.6-sol -> runs/px/rq3_floor_nosol.json (gateway sensitivity)
 """
 import collections, json, os, random, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -55,9 +56,10 @@ def ctest(groups, rng):
     return dict(clusters=k, mean_diff=m, ci95=[boot[int(0.025 * B)], boot[int(0.975 * B) - 1]], p_one_sided=(perm + 1) / (B + 1))
 
 
-def main():
+def main(exclude=(), out_path=OUT):
     R = [json.loads(l) for l in open(FRONTIER)]
-    R = [r for r in R if r.get("err") is None and r.get("trace") is not None and not r["security"]]
+    R = [r for r in R if r.get("err") is None and r.get("trace") is not None and not r["security"]
+         and r.get("model") not in exclude]
     itlist = {s: sorted(get_suite(s).injection_tasks) for s in ("banking", "slack", "travel")}
     rng = random.Random(SEED)
     rows = []
@@ -99,7 +101,7 @@ def main():
     print("pooled_cluster_pair:", out["pooled_cluster_pair"])
     for m in out["per_model"]:
         out["per_model"][m]["cluster_target"] = ctest([v for (mm, _), v in tg.items() if mm == m], rng)
-    json.dump(out, open(OUT, "w"), indent=1)
+    json.dump(out, open(out_path, "w"), indent=1)
     for k in ("pooled_cluster_target", "pooled_cluster_model"):
         v = out[k]; print(f"{k}: clusters={v['clusters']} diff={100*v['mean_diff']:.2f}pp CI[{100*v['ci95'][0]:.2f},{100*v['ci95'][1]:.2f}] p={v['p_one_sided']:.4f}")
     for m, v in out["per_model"].items():
@@ -113,4 +115,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if "--exclude" in sys.argv:
+        m = sys.argv[sys.argv.index("--exclude") + 1]
+        main(exclude={m}, out_path=os.path.join(HERE, "..", "runs", "px", "rq3_floor_nosol.json"))
+    else:
+        main()

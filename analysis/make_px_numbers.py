@@ -82,15 +82,19 @@ m("pxBenignEmptyPct", f"{F(Fraction(100 * sum(not r['trace'] for r in B), len(B)
 C = [json.loads(l) for f in glob.glob(os.path.join(H, "..", "runs", "rq1", "census_qwen3-8b-yf*.jsonl")) if "ABORTED" not in f for l in open(f)]
 C = [r for r in C if r.get("err") is None and r.get("trace") is not None]
 m("pxRQoneEmptyPct", f"{F(Fraction(100 * sum(not r['trace'] for r in C), len(C)), '.1f')}")
-# post-hoc (cold read M4): held-out control on undefended units only (rq1_heldout_undef.py)
+# post-hoc: held-out control on undefended units only (rq1_heldout_undef.py)
 u = json.load(open(os.path.join(PX, "rq1_heldout_undef.json")))
 assert u["pooled"]["p"] < 0.001
 m("pxUndefHoPooledRho", f"{F(u['pooled']['rho'], '.3f')}"); m("pxUndefHoN", str(u["pooled"]["n"])); m("pxUndefHoPass", str(u["npass"]))
-# post-hoc (codex round 1): RQ1 with the target as cluster (rq1_cluster.py)
+# post-hoc: RQ1 with the target as cluster (rq1_cluster.py)
 q = json.load(open(os.path.join(PX, "rq1_cluster.json")))
 for mk, tag in (("qwen3-8b-yf", "QwenEightB"), ("qwen3-32b-local", "QwenThirtyTwoB"), ("llama31-8b-local", "Llama"), ("granite31-8b-local", "Granite")):
     v = q["per_model"][mk]; m(f"pxClPm{tag}Lo", f"{F(v['ci95'][0], '.3f')}"); m(f"pxClPm{tag}Hi", f"{F(v['ci95'][1], '.3f')}")
 m("pxClPmGraniteDraws", f"{q['per_model']['granite31-8b-local']['draws']:,}")   # resamples where rho is defined
+import re as _re   # total bootstrap resamples B of rq1_cluster.py, read from its source so no rerun is needed
+sp = json.load(open(os.path.join(PX, "rq1_samepop.json")))["pooled_centred"]   # Table S3 pooled row, same units as held-out
+m("pxSamePopHoUnitsRho", F(sp["same_rep_on_heldout_units"]["rho"], ".3f")); m("pxSamePopHoUnitsN", str(sp["held_out"]["n"]))
+m("pxClBootTotal", f"{int(_re.search(r'^B, SEED = (\d+)', open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rq1_cluster.py')).read(), _re.M).group(1)):,}")
 for k, tag in (("pooled_same", "Same"), ("pooled_heldout", "Ho")):
     m(f"pxCl{tag}Lo", f"{F(q[k]['ci95'][0], '.3f')}"); m(f"pxCl{tag}Hi", f"{F(q[k]['ci95'][1], '.3f')}"); m(f"pxCl{tag}P", f"{F(q[k]['p_one_sided'], '.3f')}")
 # unweighted precision over the labelled sample (the headline figures reweight the strata to the population)
@@ -122,7 +126,9 @@ T = ["\\begin{table}[t]\\centering\\small",
      "A2 gives reward 1 at level three or four and 0 otherwise, which adds level-three runs to the runs that binary success rewards. "
      "A3 rewards each run with a level drawn at random from the levels its campaign has seen so far, the current run included. "
      "The predictions registered before the runs were A1 at or above proximity, A2 between proximity and binary success and A3 close to proximity. "
-     "A2 instead showed no significant difference from binary success. One binary-success execution ended in an engine error and counts as an execution without a violation.}" % y["units"],
+     "A2 averaged %s distinct payloads, above the %s of binary success and the %s of proximity, so its mean fell outside the predicted range. "
+     "One binary-success execution ended in an engine error and counts as an execution without a violation.}"
+     % (y["units"], *(F(exact(y['arms'][a]['distinct_mean'], y['units']), '.2f') for a in ("prox-l3", "binary", "prox-v21"))),
      "\\label{tab:ablate}", "\\begin{tabular}{lcccc}", "\\toprule",
      "\\Varword{} & Distinct $\\uparrow$ & median first success $\\downarrow$ & $\\hat A_{12}$ vs proximity & $\\hat A_{12}$ vs binary \\\\", "\\midrule"]
 def cell(fam, a):

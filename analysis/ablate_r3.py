@@ -1,4 +1,4 @@
-"""Plan §11 exploratory definition ablation (cloud A100, five arms, separate memo per arm).
+"""Plan §11 exploratory definition ablation (CFFF, five arms, separate memo per arm).
 Same estimator as E-PX3 (px3_fresh.py): distinct violating payload texts per campaign, paired by
 (seed, target), A12 + two-sided Wilcoxon, Holm over the three ablation arms; first-success log-rank.
 Comparisons: each of prox-nowf, prox-l3, prox-perm against prox-v21 (Holm over 3) and against binary

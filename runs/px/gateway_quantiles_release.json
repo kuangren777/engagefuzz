@@ -1,0 +1,77 @@
+{
+ "_note": "billed prompt-token quantiles p10/p50/p90/p99 per model and time window, from the API gateway's billing log; per-call usage was not recorded",
+ "rq3_window": {
+  "gpt-5.6-sol": [
+   5118,
+   7316,
+   27902,
+   28663
+  ],
+  "gemini-3.1-pro": [
+   1436,
+   3906,
+   4914,
+   5783
+  ],
+  "glm-5.3": [
+   1471,
+   4135,
+   5162,
+   5946
+  ],
+  "kimi-k3": [
+   1283,
+   3649,
+   4939,
+   5942
+  ],
+  "deepseek-v4.1-flash": [
+   1664,
+   4577,
+   5800,
+   6858
+  ]
+ },
+ "px2_window": {
+  "gpt-5.6-sol": [
+   420,
+   4809,
+   4986,
+   5131
+  ],
+  "gemini-3.1-pro": [
+   687,
+   774,
+   984,
+   1074
+  ]
+ },
+ "px3_window": {
+  "gpt-5.5": [
+   358,
+   1200,
+   2152,
+   5061
+  ]
+ },
+ "rq2_window": {
+  "judge_calls_logged_token": 7,
+  "expected_judge_calls": 858
+ },
+ "probe_prefix_tokens": {
+  "gpt-5.6-sol": 4386
+ },
+ "probe_offset_tokens": {
+  "gemini-3.1-pro": 252.2,
+  "glm-5.3": 332.0,
+  "kimi-k3": 141.0,
+  "claude-sonnet-5": 68.6,
+  "deepseek-v4.1-flash": 11.0
+ },
+ "n": {
+  "rq3_gpt-5.6-sol": 534,
+  "px2_gpt-5.6-sol": 259,
+  "px3_gpt-5.5": 1603,
+  "rq4_gpt-5.6-sol_window": 1715
+ }
+}

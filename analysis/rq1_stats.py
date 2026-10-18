@@ -24,7 +24,7 @@ from scipy.stats import kendalltau, spearmanr
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "engine"))
 import engagefuzz as ef  # noqa: E402  (prox_v2, reduce_prox, SIDE_PREFIX via harness path)
 
-MODELS = ["qwen3-8b-yf", "llama31-8b-local", "qwen3-32b-local", "granite31-8b-local"]
+MODELS = ["qwen3-8b-yf", "llama31-8b-local", "qwen3-32b-local", "granite31-8b-local"]  # Qwen3-8B census on a self-hosted server
 PASS_K = 3   # C2: Holm-adjusted one-sided p < 0.05 on >= PASS_K models (4 of 5 once gpt-oss joins)
 
 

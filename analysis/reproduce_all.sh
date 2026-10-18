@@ -37,6 +37,9 @@ for f in px1a px2_summary; do
   cmp -s "../runs/px/$f.json" "../out/px_shipped/$f.json" && echo "same as runs/px/$f.json" || echo "DIFFERS from runs/px/$f.json"
 done
 python3 make_px_numbers.py > /dev/null
+# SI Table S4 (runs without a tool call) and the gateway sensitivity / prefix table (SI)
+python3 empty_trace.py > /dev/null
+python3 gateway_sens.py > /dev/null
 # SI Table S3: same-population rho (also rewrites runs/px/rq1_samepop.json, compared below)
 cp ../runs/px/rq1_samepop.json ../out/px_shipped/ 2>/dev/null || true
 python3 rq1_samepop.py > /dev/null

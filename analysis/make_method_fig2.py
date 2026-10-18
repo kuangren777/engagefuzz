@@ -1,4 +1,4 @@
-"""Method figure v3 (redraw, PM #872). Topology: measure path on top, pipeline mid,
+"""Method figure v3 (redraw). Topology: measure path on top, pipeline mid,
 ladder lower-right, reward path down the right margin, return along the left margin.
 Canvas 8.5cm wide, all fonts >= 7pt at final size. No text-arrow crossings.
 python3 make_method_fig2.py [out.pdf]
@@ -72,7 +72,7 @@ ax.text(lad["cx"], lad["t"][1] - 2.6, "first match, top $\\rightarrow$ bottom",
 rows = ["L4  oracle fires",
         "L3  side-effect $\\wedge\\ \\mathrm{uniq}(v)$",
         "L2  side-effect $\\wedge\\ f{\\notin}F_{user}$",
-        "L1  seen, no call",
+        "L1  seen, no L2/L3 call",
         "L0  unseen"]
 for i, r in enumerate(rows):
     ax.text(lad["x"] + 2.5, lad["t"][1] - 6.6 - i * 3.5, r, fontsize=7.0, ha="left",

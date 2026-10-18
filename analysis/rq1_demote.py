@@ -38,12 +38,12 @@ def main():
     out = os.path.join(runs, "px", "rq1_demote.json")
     rq1_stats.main(os.path.join(runs, "rq1"), out)
     tmp = tempfile.mkdtemp()
-    os.makedirs(os.path.join(tmp, "a")); os.makedirs(os.path.join(tmp, "out"))
+    os.makedirs(os.path.join(tmp, "a")); os.makedirs(os.path.join(tmp, "paper-overleaf"))
     os.symlink(os.path.abspath(runs), os.path.join(tmp, "runs"))
     rq1_heldout.HERE = os.path.join(tmp, "a")
     rq1_heldout.main()
     ho = {k: v for k, v in re.findall(r"\\newcommand\{\\(\w+)\}\{([^}]*)\}",
-                                       open(os.path.join(tmp, "out", "rq1ho_numbers.tex")).read())}
+                                       open(os.path.join(tmp, "paper-overleaf", "rq1ho_numbers.tex")).read())}
     res = json.load(open(out)); res["heldout_macros"] = ho
     json.dump(res, open(out, "w"), indent=1, default=str)
 

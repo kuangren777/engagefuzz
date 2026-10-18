@@ -4,7 +4,7 @@ python3 make_numbers.py -> out/{numbers,rq4_numbers}.tex
 
 These two macro files were first written by hand from
 runs/rq1/rq1_stats.json (rq1_stats.py output) and runs/rq4/*.json. This script reproduces them
-byte for byte from the same files, so every number in them traces to shipped data.
+byte for byte from the same files (TABLE_PROVENANCE.md).
 """
 import json
 import os
