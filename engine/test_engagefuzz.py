@@ -256,3 +256,25 @@ def test_memo_key_scoped_by_seed():
     # seed 0 and seed 1 keys are disjoint -> no cross-seed execution sharing
     assert keys[0].isdisjoint(keys[1])
     assert all("s0" in k for k in keys[0]) and all("s1" in k for k in keys[1])
+
+
+def test_system_role_client_sends_developer_as_system():
+    """Self-hosted models get AgentDojo's 'developer' system prompt as 'system' (Qwen templates skip 'developer')."""
+    import harness
+    seen = {}
+
+    class _Inner:
+        class chat:
+            class completions:
+                @staticmethod
+                def create(**kw):
+                    seen.update(kw)
+                    return "ok"
+
+    c = harness._SystemRoleClient(_Inner())
+    msgs = [{"role": "developer", "content": "sys"}, {"role": "user", "content": "hi"}]
+    assert c.chat.completions.create(model="m", messages=msgs) == "ok"
+    assert [m["role"] for m in seen["messages"]] == ["system", "user"]
+    assert seen["messages"][0]["content"] == "sys"
+    assert msgs[0]["role"] == "developer"          # caller's list is not mutated
+    assert harness.client_for("qwen3-8b-local") is harness.LOCAL_SYSTEM_CLIENT

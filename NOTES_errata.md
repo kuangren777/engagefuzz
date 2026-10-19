@@ -5,7 +5,7 @@ The first RQ2 run (Llama commit 30ab18e0, 8 partial Qwen campaigns) keyed the ex
 
 After seed-scoping the memo (commit 95a82a0c) and rerunning, the inflation is gone. On corrected Llama (commit 8bf2b049) binary's replay violations dropped from 61 to 20, and prox-v21 ties binary (paired Â12=0.537, Holm p=0.65). The corrected conclusion is "no significant difference between reward functions on Llama", not "proximity is worse".
 
-This mechanism is a property of the superseded run's design, not a finding about proximity. Per PM ruling 2026-10-06 it stays here, out of the paper body. The superseded data lives in runs/rq2_superseded/ and enters no table or comparison.
+This mechanism is a property of the superseded run's design, not a finding about proximity. Per a ruling of 2026-10-06 it stays here, out of the paper body. The superseded data lives in runs/rq2_superseded/ and enters no table or comparison.
 
 ## 2026-10-06 — InjecAgent RQ4 run notes
 - Pool correction: the first launch sampled from `test_cases_ds_base.json` only (531 cases). Caught against plan §8, which specifies the full 1088 data-stealing set. Stopped after 9 rows and restarted on `ds_base + ds_enhanced` (1062 usable, 26 excluded for no attacker-unique value). The 9 ds_base-only rows were discarded (deleted) before the restart, so they are not archived and do not enter the final rows; the final `runs/rq4/injecagent_llama.jsonl` is written fresh from the correct pool.

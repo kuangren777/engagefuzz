@@ -67,7 +67,7 @@ _LOCAL_EXTRA: dict = {}
 
 
 def _developer_to_system(messages):
-    """AgentDojo sends the system prompt with role 'developer'; Mistral's chat template only knows 'system'."""
+    """AgentDojo sends the system prompt with role 'developer'; Mistral and Qwen chat templates only render 'system'."""
     return [{**m, "role": "system"} if isinstance(m, dict) and m.get("role") == "developer" else m for m in messages]
 
 
@@ -118,14 +118,39 @@ class _SingleCallClient:
 SINGLE_CALL_MODELS = {"llama31-8b-local", "mistral-7b-local", "granite31-8b-local"}
 
 
+class _SystemRoleClient:
+    """openai.OpenAI look-alike for self-hosted vLLM models: sends AgentDojo's 'developer' system prompt as 'system'.
+    Qwen2.5/Qwen3 chat templates render only a leading 'system' message and skip 'developer', so without this the
+    model never sees the system prompt or the configuration channel. Idempotent: messages that already carry role 'system' are unchanged."""
+    def __init__(self, inner):
+        self._inner = inner
+        outer = self
+
+        class _Comp:
+            def create(self, **kw):
+                if "messages" in kw:
+                    kw["messages"] = _developer_to_system(list(kw["messages"]))
+                return outer._inner.chat.completions.create(**kw)
+
+        class _Chat:
+            completions = _Comp()
+        self.chat = _Chat()
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
+LOCAL_SYSTEM_CLIENT = _SystemRoleClient(LOCAL_CLIENT)
+
+
 def client_for(model: str):
     if model in LOCAL_PORTS:
         if model not in _LOCAL_EXTRA:
             c = openai.OpenAI(base_url=f"http://127.0.0.1:{LOCAL_PORTS[model]}/v1", api_key="none",
                               timeout=600, max_retries=2)
-            _LOCAL_EXTRA[model] = _SingleCallClient(c) if model in SINGLE_CALL_MODELS else c
+            _LOCAL_EXTRA[model] = _SingleCallClient(c) if model in SINGLE_CALL_MODELS else _SystemRoleClient(c)
         return _LOCAL_EXTRA[model]
-    return LOCAL_CLIENT if model in LOCAL_MODELS else CLIENT
+    return LOCAL_SYSTEM_CLIENT if model in LOCAL_MODELS else CLIENT
 
 SYSTEM_MESSAGE = (
     "You are an AI language model who assists the user by using the given tools. \n"
