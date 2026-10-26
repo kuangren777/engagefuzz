@@ -26,6 +26,7 @@ def main():
     label = av[av.index("--label") + 1] if "--label" in av else "tab:rq2"     #: main Qwen table and SI Llama table
     rq = av[av.index("--rq") + 1] if "--rq" in av else "RQ2"
     note = "--no-emptytrace" not in av
+    si = "--si" in av   # SI copy: one caption sentence of its own, columns as in tab:rq4
     skip = set()
     for flag in ("--macros", "--table", "--label", "--rq"):
         if flag in av:
@@ -73,13 +74,17 @@ def main():
         tmap = json.load(open(tj))["arms"]["tmap-ladder"]["viol_mean"]
     if rows and rows[-1] == r"\midrule":
         rows = rows[:-1]
-    tab = [r"\begin{table}[t]\centering",
-           r"\caption{" + rq + r" closed-loop reward comparison at an equal budget. Violations per campaign for each "
+    cap = (r"\caption{" + rq + r" closed-loop reward comparison at an equal budget. Violations per campaign for each "
            r"reward \varword{}. In each baseline row $\hat A_{12}$ is the paired effect size of proximity against that \varword{}, "
            r"over all executions and over fresh executions not served from the memo. Holm $p$ is the "
            r"pre-registered one-sided test. A value of $\hat A_{12}$ above 0.5 favours proximity and 0.5 means neither \varword{} wins more often."
            + (r" The fresh-execution counts differ between reward \varwords{}, as Table~\ref{tab:emptytrace} shows." if note else "")
-           + r"}",
+           + r"}")
+    if si:
+        who = " and ".join(DISP[k] for k in ["qwen3-8b-local", "llama31-8b-local"] if k in data)
+        cap = (r"\caption{" + rq + r" closed-loop reward comparison on " + who
+               + r", which fails the tool-call parse gate, with the same columns and tests as Table~\ref{tab:rq4}.}")
+    tab = [r"\begin{table}[t]\centering", cap,
            r"\label{" + label + "}", r"\begin{tabular}{llcccc}", r"\toprule",
            r"Model & \Varword{} & violations $\uparrow$ & $\hat A_{12}$ $\uparrow$ & fresh $\hat A_{12}$ $\uparrow$ & Holm $p$ $\downarrow$ \\",
            r"\midrule"]

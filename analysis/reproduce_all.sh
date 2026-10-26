@@ -20,7 +20,7 @@ python3 make_numbers.py
 python3 make_rq2_table.py ../out/rq2_paired_qwen.json \
   --macros ../out/rq2_numbers.tex --table ../out/rq2_table.tex --label tab:rq4 --rq RQ4 --no-emptytrace
 python3 make_rq2_table.py ../out/rq2_paired_llama.json \
-  --macros ../out/rq2llama_numbers.tex --table ../out/rq2_llama_table.tex --label tab:rq4llama --rq RQ4 --no-emptytrace
+  --macros ../out/rq2llama_numbers.tex --table ../out/rq2_llama_table.tex --label tab:rq4llama --rq RQ4 --no-emptytrace --si
 python3 rq1_heldout.py > /dev/null
 # level-three anatomy on the models that pass the tool-call parse gate
 python3 rq3_taxonomy.py --models qwen3-8b-yf,qwen3-32b-local,qwen3-8b-local > /dev/null
