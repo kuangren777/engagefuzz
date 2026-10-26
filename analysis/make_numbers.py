@@ -20,6 +20,7 @@ RQ1_MODELS = [("qwen3-8b-yf", "QwenEightB", "Qwen3-8B"),
               ("qwen3-32b-local", "QwenThirtyTwoB", "Qwen3-32B"),
               ("granite31-8b-local", "Granite", "Granite-3.1-8B")]
 PRIMARY = "v21_minfail1"  # pre-registered fail-only rho, proximity ladder v2.1
+COV = "cov_minfail1"  # pre-registered comparison predictor: distinct read-only tools, same fail-only rho
 # InjecAgent data-stealing pool after excluding cases without an attacker-unique value
 # (ds_base + ds_enhanced = 1088, 26 excluded), the pool injecagent/injecagent_run.py samples from.
 # Recounted from the InjecAgent data when present; 1062 is that count (rechecked 2026-10-14).
@@ -55,6 +56,7 @@ def rq1():
               m(f"rqone{stem}Tau", f"{F(s['kendall_tau_b'], '.3f')}"),
               m(f"rqone{stem}ASR", f"{F(exact(s['asr'], s['rows']), '.3f')}"),
               m(f"rqone{stem}N", str(r["n"])),
+              m(f"rqone{stem}CovRho", f"{F(s['rho'][COV]['rho'], '.3f')}"),  # read-only coverage, same fail-only rho
               m(f"rqone{stem}Disp", disp)]
     re_, pc, c2 = d["random_effects"], d["pooled_model_centred"], d["C2"]
     L += [m("rqonePooledRho", f"{F(re_['rho'], '.3f')}"),

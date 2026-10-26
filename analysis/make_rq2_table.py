@@ -23,8 +23,11 @@ def main():
     av = sys.argv[1:]
     macros = av[av.index("--macros") + 1] if "--macros" in av else None
     table = av[av.index("--table") + 1] if "--table" in av else None
+    label = av[av.index("--label") + 1] if "--label" in av else "tab:rq2"     #: main Qwen table and SI Llama table
+    rq = av[av.index("--rq") + 1] if "--rq" in av else "RQ2"
+    note = "--no-emptytrace" not in av
     skip = set()
-    for flag in ("--macros", "--table"):
+    for flag in ("--macros", "--table", "--label", "--rq"):
         if flag in av:
             i = av.index(flag); skip |= {i, i + 1}
     files = [a for i, a in enumerate(av) if i not in skip and not a.startswith("--")]
@@ -71,12 +74,13 @@ def main():
     if rows and rows[-1] == r"\midrule":
         rows = rows[:-1]
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{RQ2 closed-loop reward comparison at an equal budget. Violations per campaign for each "
+           r"\caption{" + rq + r" closed-loop reward comparison at an equal budget. Violations per campaign for each "
            r"reward \varword{}. In each baseline row $\hat A_{12}$ is the paired effect size of proximity against that \varword{}, "
            r"over all executions and over fresh executions not served from the memo. Holm $p$ is the "
-           r"pre-registered one-sided test. A value of $\hat A_{12}$ above 0.5 favours proximity and 0.5 means neither \varword{} wins more often. The fresh-execution counts differ between reward \varwords{}, as Table~\ref{tab:emptytrace} shows."
-           r"}",
-           r"\label{tab:rq2}", r"\begin{tabular}{llcccc}", r"\toprule",
+           r"pre-registered one-sided test. A value of $\hat A_{12}$ above 0.5 favours proximity and 0.5 means neither \varword{} wins more often."
+           + (r" The fresh-execution counts differ between reward \varwords{}, as Table~\ref{tab:emptytrace} shows." if note else "")
+           + r"}",
+           r"\label{" + label + "}", r"\begin{tabular}{llcccc}", r"\toprule",
            r"Model & \Varword{} & violations $\uparrow$ & $\hat A_{12}$ $\uparrow$ & fresh $\hat A_{12}$ $\uparrow$ & Holm $p$ $\downarrow$ \\",
            r"\midrule"]
     tab += rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]

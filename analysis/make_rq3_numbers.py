@@ -56,6 +56,29 @@ def main():
     m("rqthreeLthreePairsMaxPerModel", str(max(len(v) for v in _pairs.values())))
     m("rqthreeLthreePairsAll", str(len(set().union(*_pairs.values()))))
     m("rqthreePairs", str(len({(r["suite"], r["ut"], r["it"]) for r in R})))
+    # largest level-three pair: run count, matched attacker value, flagged side-effect function (codex r12)
+    from collections import Counter
+    from fuzzer import SIDE_PREFIX
+    l3r = [r for r in nv if r["_l21"] == 3]
+    top, top_n = Counter((r["suite"], r["ut"], r["it"]) for r in l3r).most_common(1)[0]
+    vals, fns = Counter(), Counter()
+    for r in l3r:
+        if (r["suite"], r["ut"], r["it"]) != top:
+            continue
+        A = ef.prox_v2.atk_values(*top)
+        afn = {f for f, _, _ in A}
+        for t in r["trace"]:
+            got = " ".join(str(v).lower() for v in (t.get("a") or {}).values())
+            h = [v for f, a, v in A if v in got]
+            if h and (t["f"].startswith(SIDE_PREFIX) or t["f"] in afn):
+                vals[h[0]] += 1; fns[t["f"]] += 1
+                break
+    m("rqthreeTopPairN", str(top_n))
+    m("rqthreeTopPairSuite", top[0].title())
+    m("rqthreeTopPairValue", vals.most_common(1)[0][0])
+    m("rqthreeTopPairValueN", str(vals.most_common(1)[0][1]))
+    m("rqthreeTopPairFn", fns.most_common(1)[0][0].replace("_", "\\_"))
+    m("rqthreeTopPairFnN", str(fns.most_common(1)[0][1]))
     m("rqthreeLzeroPct", f"{F(Fraction(100 * sum(r['_l21'] == 0 for r in nv), max(1, len(nv))), '.1f')}")
     m("rqthreeLonePct", f"{F(Fraction(100 * sum(r['_l21'] == 1 for r in nv), max(1, len(nv))), '.1f')}")
     # per-model density macros (frontier table)

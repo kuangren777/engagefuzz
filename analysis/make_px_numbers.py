@@ -30,6 +30,14 @@ m("pxNlabelled", str(s["n_labelled"]))
 m("pxCollRQone", f"{F(Fraction(100 * c['rq1']['fires'], c['rq1']['pairs']), '.2f')}")
 m("pxCollRQtwo", f"{F(Fraction(100 * c['rq2']['fires'], c['rq2']['pairs']), '.2f')}")
 m("pxCollFrontier", f"{F(Fraction(100 * c['frontier']['fires'], c['frontier']['pairs']), '.1f')}")
+# collision rate on the parse-gate models only (px1a_collision.py --models)
+gp = os.path.join(PX, "px1a_gate.json")
+if os.path.exists(gp):
+    g = json.load(open(gp))
+    m("pxCollGateRQone", f"{F(Fraction(100 * g['rq1']['fires'], g['rq1']['pairs']), '.1f')}")
+    m("pxCollGateRQtwo", f"{F(Fraction(100 * g['rq2']['fires'], g['rq2']['pairs']), '.1f')}")
+    m("pxCollGatePairs", f"{g['rq1']['pairs'] + g['rq2']['pairs']:,}")
+    m("pxCollGate", f"{F(Fraction(100 * (g['rq1']['fires'] + g['rq2']['fires']), g['rq1']['pairs'] + g['rq2']['pairs']), '.1f')}")
 # sampling rule and mix of the labelled set (plan §10.2)
 m("pxPopPartial", str(s["population"]["partial-args"]))
 m("pxPopWrongfn", str(s["population"]["wrong-function"]))
@@ -84,7 +92,8 @@ C = [r for r in C if r.get("err") is None and r.get("trace") is not None]
 m("pxRQoneEmptyPct", f"{F(Fraction(100 * sum(not r['trace'] for r in C), len(C)), '.1f')}")
 # post-hoc: held-out control on undefended units only (rq1_heldout_undef.py)
 u = json.load(open(os.path.join(PX, "rq1_heldout_undef.json")))
-assert u["pooled"]["p"] < 0.001
+# S1: the frozen text said p < 0.001; after the Qwen rerun it no longer holds, so p is emitted as a macro instead of asserted
+m("pxUndefHoPooledP", f"{F(u['pooled']['p'], '.2g')}")
 m("pxUndefHoPooledRho", f"{F(u['pooled']['rho'], '.3f')}"); m("pxUndefHoN", str(u["pooled"]["n"])); m("pxUndefHoPass", str(u["npass"]))
 # post-hoc: RQ1 with the target as cluster (rq1_cluster.py)
 q = json.load(open(os.path.join(PX, "rq1_cluster.json")))
@@ -105,38 +114,56 @@ for who, tag in (("gpt-5.6-sol", "Gpt"), ("gemini-3.1-pro", "Gem")):
 # E-PX3 (plan 10.3): equal fresh budget, separate memo per arm (px3_fresh.py)
 x = json.load(open(os.path.join(PX, "px3.json")))
 for arm, tag in (("binary", "Bin"), ("prox-v21", "Prox"), ("tmap-ladder", "Tmap")):
+    if arm not in x["arms"]:      # T-MAP not rerun (S1)
+        continue
     m(f"pxThree{tag}Dist", f"{F(exact(x['arms'][arm]['distinct_mean'], x['units']), '.2f')}")
 m("pxThreeUnits", str(x["units"]))
 for k, tag in (("prox-v21_vs_binary", "ProxBin"), ("tmap-ladder_vs_binary", "TmapBin"), ("tmap-ladder_vs_prox-v21", "TmapProx")):
+    if k not in x["primary"]:
+        continue
     m(f"pxThree{tag}A", f"{F(exact(x['primary'][k]['A12'], 2 * x['units']), '.3f')}"); m(f"pxThree{tag}Holm", f"{F(x['primary'][k]['holm'], '.2g')}")
+for arm, tag in (("binary", "Bin"), ("prox-v21", "Prox")):   #: KM medians of executions to first success
+    m(f"pxThree{tag}KM", str(x["arms"][arm]["km_median_first"]))
+    m(f"pxThree{tag}Hits", str(x["arms"][arm]["memo_hits"]))   # within-variant memo hits (codex r11)
 m("pxThreeLogrankMinP", f"{F(min(v['p'] for v in x['secondary'].values()), '.2f')}")
-# plan 11 post-hoc definition ablation, five arms on a second host (ablate_r3.py)
+# plan 11 post-hoc definition ablation, five arms, separate memo each (ablate_r3.py; S1 rerun on the same cluster as RQ4)
 y = json.load(open(os.path.join(PX, "ablate_r3.json")))
 for arm, tag in (("binary", "Bin"), ("prox-v21", "Prox"), ("prox-l3", "Lthree")):
     m(f"pxAb{tag}Dist", f"{F(exact(y['arms'][arm]['distinct_mean'], y['units']), '.2f')}")
-m("pxAbRepA", f"{F(exact(y['binary_vs_prox_replication']['A12'], 2 * y['units']), '.3f')}"); m("pxAbRepP", f"{F(y['binary_vs_prox_replication']['p_two_sided'], '.4f')}")
+m("pxAbRepA", f"{F(exact(y['binary_vs_prox_replication']['A12'], 2 * y['units']), '.3f')}"); m("pxAbRepP", f"{F(y['binary_vs_prox_replication']['p_two_sided'], '.2g')}")
+m("pxAbLthreeBinA", f"{F(exact(y['vs_binary']['prox-l3']['A12'], 2 * y['units']), '.3f')}"); m("pxAbLthreeBinHolm", f"{F(y['vs_binary']['prox-l3']['holm'], '.2g')}")
 m("pxAbLthreeProxA", f"{F(exact(y['vs_prox']['prox-l3']['A12'], 2 * y['units']), '.3f')}"); m("pxAbLthreeProxHolm", f"{F(y['vs_prox']['prox-l3']['holm'], '.2g')}")
+# caption tail computed from the data
+_d = {a: exact(y['arms'][a]['distinct_mean'], y['units']) for a in ("prox-l3", "binary", "prox-v21")}
+_inside = min(_d["binary"], _d["prox-v21"]) <= _d["prox-l3"] <= max(_d["binary"], _d["prox-v21"])
+ABL_TAIL = ("A2 averaged %s distinct payloads against %s for binary success and %s for proximity, so its mean fell %s the predicted range. "
+            % (F(_d["prox-l3"], '.2f'), F(_d["binary"], '.2f'), F(_d["prox-v21"], '.2f'), "inside" if _inside else "outside"))
+_err = sum(a.get("errors", 0) for a in y["arms"].values())
+_sch = sum(v["rows"] for v in y.get("excluded_schema_text", {}).values())
+if _err:
+    ABL_TAIL += "The counts treat %d executions that ended in an engine error as executions without a violation. " % _err
+if _sch:
+    ABL_TAIL += "The table leaves out %d executions whose output holds tool-schema text. " % _sch
+ABL_TAIL = ABL_TAIL.rstrip() + "}"
 NAME = {"binary": "binary success", "prox-v21": "proximity", "prox-nowf": "A1 wrong function demoted",
         "prox-l3": "A2 levels three and four only", "prox-perm": "A3 sampled past level"}
 T = ["\\begin{table}[t]\\centering\\small",
-     "\\caption{Post-hoc reward-definition ablation on Qwen3-8B, rerun on a second host with a separate memo per \\varword{} over %d paired campaigns of forty executions. "
+     "\\caption{Post-hoc reward-definition ablation on Qwen3-8B, run with a separate memo per \\varword{} over %d paired campaigns of forty executions. "
      "Distinct is the mean number of distinct violating payloads per campaign $\\uparrow$. Each $\\hat A_{12}$ compares the row \\varword{} with the column \\varword{}, with Holm-adjusted $p$ over the three ablation \\varwords{}, except the binary-success row, whose $p$ is two-sided and unadjusted. "
      "Median first success is the Kaplan-Meier median of executions to the first violation $\\downarrow$. "
      "A1 scores a level-three run as level two when its first flagged call uses a function outside the attacker task. "
      "A2 gives reward 1 at level three or four and 0 otherwise, which adds level-three runs to the runs that binary success rewards. "
      "A3 rewards each run with a level drawn at random from the levels its campaign has seen so far, the current run included. "
      "The predictions registered before the runs were A1 at or above proximity, A2 between proximity and binary success and A3 close to proximity. "
-     "A2 averaged %s distinct payloads, above the %s of binary success and the %s of proximity, so its mean fell outside the predicted range. "
-     "One binary-success execution ended in an engine error and counts as an execution without a violation.}"
-     % (y["units"], *(F(exact(y['arms'][a]['distinct_mean'], y['units']), '.2f') for a in ("prox-l3", "binary", "prox-v21"))),
+     % y["units"] + ABL_TAIL,
      "\\label{tab:ablate}", "\\begin{tabular}{lcccc}", "\\toprule",
      "\\Varword{} & Distinct $\\uparrow$ & median first success $\\downarrow$ & $\\hat A_{12}$ vs proximity & $\\hat A_{12}$ vs binary \\\\", "\\midrule"]
 def cell(fam, a):
-    v = y[fam].get(a); return "--" if v is None else f"{F(exact(v['A12'], 2 * y['units']), '.3f')}, $p={F(v['holm'], '.2g')}$"
+    v = y[fam].get(a); return "--" if v is None else f"{F(exact(v['A12'], 2 * y['units']), '.3f')}, $p=$\\,{F(v['holm'], '.2g')}"
 for a in ("binary", "prox-v21", "prox-nowf", "prox-l3", "prox-perm"):
     r = y["arms"][a]; vp = cell("vs_prox", a); vb = cell("vs_binary", a)
     if a == "binary":
-        rr = y["binary_vs_prox_replication"]; vp = f"{F(1 - exact(rr['A12'], 2 * y['units']), '.3f')}, $p={F(rr['p_two_sided'], '.2g')}$"
+        rr = y["binary_vs_prox_replication"]; vp = f"{F(1 - exact(rr['A12'], 2 * y['units']), '.3f')}, $p=$\\,{F(rr['p_two_sided'], '.2g')}"
     T.append(f"{NAME[a]} & {F(exact(r['distinct_mean'], y['units']), '.2f')} & {r['km_median_first']} & {vp} & {vb} \\\\")
 T += ["\\bottomrule", "\\end{tabular}", "\\end{table}"]
 open(os.path.join(H, "..", "out", "ablate_table.tex"), "w").write("\n".join(T) + "\n")

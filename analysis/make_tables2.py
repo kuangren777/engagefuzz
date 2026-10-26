@@ -76,7 +76,7 @@ def memo_table():
         for arm in ["prox-v21", "random", "binary", "coverage"]:
             a = d["arms"][arm]
             rows.append((disp, {"prox-v21": "proximity"}.get(arm, arm), exact(a["memo_hit"], a["n"] * d["budget"]), a["replay_viol"]))
-        if tag == "qwen":
+        if tag == "qwen" and os.path.exists(os.path.join(RUNS, "rq2", "rq2_tmap_qwen.json")):   # T-MAP not rerun (S1)
             t = json.load(open(os.path.join(RUNS, "rq2", "rq2_tmap_qwen.json")))["arms"]["tmap-ladder"]
             rows.append((disp, "T-MAP ladder", exact(t["memo_hit"], t["n"] * d["budget"]), t["replay_viol"]))
     body = []
@@ -84,7 +84,7 @@ def memo_table():
         body.append(f"{disp} & {arm} & {F(mh, '.2f')} & {rv} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
            r"\caption{Execution-memo hit rate and replay violations per reward \varword{}. A replay violation is a "
-           r"violation served from the memo rather than a fresh execution.}", r"\label{tab:memo}",
+           r"violation served from the memo rather than a fresh execution. Llama-3.1-8B fails the tool-call parse gate.}", r"\label{tab:memo}",
            r"\begin{tabular}{llcc}", r"\toprule",
            r"Model & Reward & memo-hit rate & replay violations \\", r"\midrule"] + body + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]

@@ -24,7 +24,8 @@ def pair_test(C, units, a, b):
 def main():
     C = X.load()
     units = sorted({k[1:] for k in C if all((a,) + k[1:] in C for a in X.ARMS)})
-    out = {"units": len(units), "arms": {}, "vs_prox": {}, "vs_binary": {}, "logrank_vs_prox": {}}
+    out = {"units": len(units), "arms": {}, "vs_prox": {}, "vs_binary": {}, "logrank_vs_prox": {},
+           "excluded_schema_text": X.EXCLUDED}
     for a in X.ARMS:
         L = [C[(a,) + u] for u in units]
         tt = [v["first"] or X.BUDGET for v in L]; ee = [v["first"] is not None for v in L]

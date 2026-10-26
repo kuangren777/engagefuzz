@@ -5,58 +5,58 @@
  "arms": {
   "prox-v21": {
    "n": 40,
-   "viol_mean": 3.85,
-   "distinct_mean": 3.825,
-   "fresh_viol_mean": 2.825,
-   "memo_hit": 0.220625,
-   "replay_viol": 41,
-   "km_median_first": 7,
+   "viol_mean": 3.425,
+   "distinct_mean": 3.4,
+   "fresh_viol_mean": 2.675,
+   "memo_hit": 0.160625,
+   "replay_viol": 30,
+   "km_median_first": 8,
    "per_suite": {
-    "travel": 37,
-    "slack": 39,
-    "banking": 78
+    "travel": 50,
+    "slack": 38,
+    "banking": 49
    }
   },
   "random": {
    "n": 40,
-   "viol_mean": 4.45,
-   "distinct_mean": 4.45,
-   "fresh_viol_mean": 4.275,
-   "memo_hit": 0.079375,
-   "replay_viol": 7,
-   "km_median_first": 8,
+   "viol_mean": 3.975,
+   "distinct_mean": 3.975,
+   "fresh_viol_mean": 3.825,
+   "memo_hit": 0.01625,
+   "replay_viol": 6,
+   "km_median_first": 7,
    "per_suite": {
-    "travel": 63,
-    "banking": 58,
-    "slack": 57
+    "banking": 62,
+    "slack": 47,
+    "travel": 50
    }
   },
   "binary": {
    "n": 40,
-   "viol_mean": 6.475,
-   "distinct_mean": 6.45,
-   "fresh_viol_mean": 5.125,
-   "memo_hit": 0.2325,
-   "replay_viol": 54,
-   "km_median_first": 7,
+   "viol_mean": 7.45,
+   "distinct_mean": 7.4,
+   "fresh_viol_mean": 6.65,
+   "memo_hit": 0.15125,
+   "replay_viol": 32,
+   "km_median_first": 6,
    "per_suite": {
-    "travel": 101,
-    "slack": 81,
-    "banking": 77
+    "slack": 111,
+    "travel": 76,
+    "banking": 111
    }
   },
   "coverage": {
    "n": 40,
-   "viol_mean": 4.35,
-   "distinct_mean": 4.325,
-   "fresh_viol_mean": 3.175,
-   "memo_hit": 0.2425,
-   "replay_viol": 47,
+   "viol_mean": 5.35,
+   "distinct_mean": 5.35,
+   "fresh_viol_mean": 3.875,
+   "memo_hit": 0.245625,
+   "replay_viol": 59,
    "km_median_first": 6,
    "per_suite": {
-    "slack": 52,
-    "banking": 60,
-    "travel": 62
+    "banking": 96,
+    "slack": 65,
+    "travel": 53
    }
   }
  },
@@ -64,69 +64,69 @@
   "primary_viol": {
    "random": {
     "A12": 0.4125,
-    "p_one_sided": 0.8901341501038169,
+    "p_one_sided": 0.89802268679124,
     "holm_p": 1.0,
-    "p_two_sided": 0.2197316997923663,
+    "p_two_sided": 0.20395462641752005,
     "n_pairs": 40
    },
    "binary": {
-    "A12": 0.3,
-    "p_one_sided": 0.9998460363460672,
+    "A12": 0.125,
+    "p_one_sided": 0.9999994403469709,
     "holm_p": 1.0,
-    "p_two_sided": 0.0003079273078656081,
+    "p_two_sided": 1.1193060583241193e-06,
     "n_pairs": 40
    },
    "coverage": {
-    "A12": 0.4125,
-    "p_one_sided": 0.8771646305076376,
+    "A12": 0.3,
+    "p_one_sided": 0.999625404377248,
     "holm_p": 1.0,
-    "p_two_sided": 0.2456707389847248,
+    "p_two_sided": 0.0007491912455040589,
     "n_pairs": 40
    }
   },
   "secondary_distinct": {
    "random": {
     "A12": 0.4125,
-    "p_one_sided": 0.8931744497920078,
+    "p_one_sided": 0.9095365653506968,
     "holm_p": 1.0,
-    "p_two_sided": 0.21365110041598445,
+    "p_two_sided": 0.18092686929860635,
     "n_pairs": 40
    },
    "binary": {
-    "A12": 0.3,
-    "p_one_sided": 0.9998750700030078,
+    "A12": 0.125,
+    "p_one_sided": 0.999999160443136,
     "holm_p": 1.0,
-    "p_two_sided": 0.00024985999398445535,
+    "p_two_sided": 1.679113728092256e-06,
     "n_pairs": 40
    },
    "coverage": {
-    "A12": 0.4125,
-    "p_one_sided": 0.8614046052380588,
+    "A12": 0.3,
+    "p_one_sided": 0.9996498298149362,
     "holm_p": 1.0,
-    "p_two_sided": 0.2771907895238822,
+    "p_two_sided": 0.0007003403701275958,
     "n_pairs": 40
    }
   },
   "secondary_fresh": {
    "random": {
     "A12": 0.3375,
-    "p_one_sided": 0.9947682899446478,
+    "p_one_sided": 0.9903172383077343,
     "holm_p": 1.0,
-    "p_two_sided": 0.010463420110704384,
+    "p_two_sided": 0.01936552338453145,
     "n_pairs": 40
    },
    "binary": {
-    "A12": 0.275,
-    "p_one_sided": 0.9983759059077677,
+    "A12": 0.1125,
+    "p_one_sided": 0.9999995049286113,
     "holm_p": 1.0,
-    "p_two_sided": 0.003248188184464578,
+    "p_two_sided": 9.901427773999066e-07,
     "n_pairs": 40
    },
    "coverage": {
-    "A12": 0.4375,
-    "p_one_sided": 0.9246338595060355,
+    "A12": 0.4,
+    "p_one_sided": 0.9896497104684734,
     "holm_p": 1.0,
-    "p_two_sided": 0.15073228098792907,
+    "p_two_sided": 0.0207005790630533,
     "n_pairs": 40
    }
   }

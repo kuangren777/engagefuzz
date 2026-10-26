@@ -15,6 +15,14 @@ PAT = re.compile(r"qwen3-8b-local_(None|both)_(\w+?)_(user_task_\d+)_(injection_
 ARMS = ["binary", "prox-v21", "tmap-ladder"]
 PAIRS = [("prox-v21", "binary"), ("tmap-ladder", "binary"), ("tmap-ladder", "prox-v21")]
 BUDGET = 40
+# Rows whose tool calls or final answer hold tool-schema text are removed before any metric.
+# The detector is the S1 concurrency audit's own (s1_concurrency_audit.SCHEMA).
+SCHEMA = re.compile(r'"type"\s*:\s*"object"|Input schema for|"properties"\s*:\s*\{')
+EXCLUDED = {}   # arm -> {"rows": n, "fresh": n}, filled by load()
+
+
+def contaminated(r):
+    return bool(SCHEMA.search(str(r.get("trace")) + (r.get("final") or "")))
 
 
 def load():
@@ -24,6 +32,10 @@ def load():
             m = PAT.search(f)
             dfn, s, ut, it, arm, seed = m.groups()
             R = [json.loads(l) for l in open(f)]
+            bad = [r for r in R if contaminated(r)]
+            e = EXCLUDED.setdefault(a, {"rows": 0, "fresh": 0})
+            e["rows"] += len(bad); e["fresh"] += sum(not r.get("memo_hit") for r in bad)
+            R = [r for r in R if not contaminated(r)]
             first = next((i + 1 for i, r in enumerate(R) if r.get("security")), None)
             C[(a, int(seed), (s, ut, it, dfn))] = dict(
                 n=len(R), viol=sum(bool(r.get("security")) for r in R),
@@ -71,9 +83,16 @@ def logrank(t1, e1, t2, e2):
 
 
 def main():
+    global ARMS, PAIRS
     C = load()
+    # S1: the tmap-ladder arm on Qwen3-8B is not rerun. Keep only arms with data;
+    # the registered Holm family had three pairs, so the remaining pair also reports p x 3 as a conservative bound.
+    missing = [a for a in ARMS if not any(k[0] == a for k in C)]
+    ARMS = [a for a in ARMS if a not in missing]
+    PAIRS = [(a, b) for a, b in PAIRS if a in ARMS and b in ARMS]
     units = sorted({k[1:] for k in C if all((a,) + k[1:] in C for a in ARMS)})
-    out = {"units": len(units), "arms": {}, "primary": {}, "secondary": {}}
+    out = {"units": len(units), "arms": {}, "primary": {}, "secondary": {}, "arms_not_rerun": missing,
+           "excluded_schema_text": EXCLUDED}
     for a in ARMS:
         L = [C[(a,) + u] for u in units]
         tt = [v["first"] or BUDGET for v in L]; ee = [v["first"] is not None for v in L]
@@ -87,6 +106,8 @@ def main():
         out["primary"][f"{a}_vs_{b}"] = dict(A12=a12(x, y), p_two_sided=p); ps.append(p)
     for (a, b), h in zip(PAIRS, holm(ps)):
         out["primary"][f"{a}_vs_{b}"]["holm"] = h
+        if missing:
+            out["primary"][f"{a}_vs_{b}"]["bonferroni_registered_family_3"] = min(1.0, 3 * out["primary"][f"{a}_vs_{b}"]["p_two_sided"])
     for a, b in PAIRS:
         ta = [C[(a,) + u]["first"] or BUDGET for u in units]; ea = [C[(a,) + u]["first"] is not None for u in units]
         tb = [C[(b,) + u]["first"] or BUDGET for u in units]; eb = [C[(b,) + u]["first"] is not None for u in units]

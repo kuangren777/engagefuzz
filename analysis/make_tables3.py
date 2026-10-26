@@ -46,9 +46,9 @@ def rq2_suite():
             px = [v["prox-v21"] for _, v in units]; bn = [v["binary"] for _, v in units]
             rows.append(f"{disp} & {suite} & {len(units)} & {F(mean(px), '.2f')} & {F(mean(bn), '.2f')} & {F(a12(px, bn), '.3f')} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{Per-suite view of RQ2, post-hoc. "
+           r"\caption{Per-suite view of RQ4, post-hoc. "
            r"Mean violations per campaign for proximity and binary success. The paired $\hat A_{12}$ "
-           r"of proximity against binary within each suite.}",
+           r"of proximity against binary within each suite. Llama-3.1-8B fails the tool-call parse gate.}",
            r"\label{tab:rq2suite}", r"\begin{tabular}{llcccc}", r"\toprule",
            r"Model & Suite & units & proximity $\uparrow$ & binary $\uparrow$ & $\hat A_{12}$ $\uparrow$ \\", r"\midrule"] + rows + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]

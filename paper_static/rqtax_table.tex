@@ -1,12 +1,12 @@
 \begin{table}[t]\centering
-\caption{Level-three failure taxonomy, post-hoc. Among level-three runs, the share of partial-argument calls, wrong-function calls and other cases. The first row covers the RQ1 runs together with all RQ2 reward \varwords{}, the second row the RQ1 runs alone.}
+\caption{RQ1 level-three taxonomy, post-hoc, on Qwen3-8B and Qwen3-32B. Each non-violating level-three run is classified by its first flagged call as a partial-argument call, a wrong-function call or another case. The first row pools the census runs with every RQ4 reward \varword{}, memo replays included. The second row covers the census runs alone.}
 \label{tab:rqtax}
 \begin{tabular}{lcccc}
 \toprule
 Population & $N$ & partial-args & wrong-function & other \\
 \midrule
-RQ1 runs and all RQ2 reward \varwords{} & \rqtaxN{} & \rqtaxPartial{} (\rqtaxPartialPct\%) & \rqtaxWrongfn{} (\rqtaxWrongfnPct\%) & \rqtaxOther{} (\rqtaxOtherPct\%) \\
-RQ1 runs only & \rqtaxRQONEN{} & \rqtaxRQonePartialPct\% & \rqtaxRQoneWrongfnPct\% & \rqtaxRQoneOtherPct\% \\
+census and RQ4 runs & \rqtaxN{} & \rqtaxPartial{} (\rqtaxPartialPct\%) & \rqtaxWrongfn{} (\rqtaxWrongfnPct\%) & \rqtaxOther{} (\rqtaxOtherPct\%) \\
+census runs only & \rqtaxRQONEN{} & \rqtaxRQonePartialPct\% & \rqtaxRQoneWrongfnPct\% & \rqtaxRQoneOtherPct\% \\
 \bottomrule
 \end{tabular}
 \end{table}

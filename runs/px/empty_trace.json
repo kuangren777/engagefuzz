@@ -2,12 +2,12 @@
  "rates": {
   "rq1|qwen3-8b-yf": {
    "n": 630,
-   "empty": 97,
+   "empty": 52,
    "empty_viol": 0
   },
   "rq1|qwen3-32b-local": {
    "n": 630,
-   "empty": 31,
+   "empty": 20,
    "empty_viol": 0
   },
   "rq1|llama31-8b-local": {
@@ -20,44 +20,39 @@
    "empty": 142,
    "empty_viol": 0
   },
-  "rq2|coverage": {
-   "n": 1212,
-   "empty": 333,
-   "empty_viol": 0
-  },
-  "rq2|binary": {
-   "n": 1228,
-   "empty": 337,
-   "empty_viol": 0
-  },
   "rq2|prox-v21": {
-   "n": 1247,
-   "empty": 331,
+   "n": 1343,
+   "empty": 58,
    "empty_viol": 0
   },
   "rq2|random": {
-   "n": 1473,
-   "empty": 443,
+   "n": 1574,
+   "empty": 85,
    "empty_viol": 0
   },
-  "rq2|tmap-ladder": {
-   "n": 858,
-   "empty": 179,
+  "rq2|binary": {
+   "n": 1358,
+   "empty": 77,
+   "empty_viol": 0
+  },
+  "rq2|coverage": {
+   "n": 1207,
+   "empty": 72,
    "empty_viol": 0
   }
  },
  "with_empty": {
-  "pooled_same": 0.22694975989818977,
-  "pooled_same_n": 311,
-  "pooled_heldout": 0.15490975344064623,
-  "pooled_heldout_n": 299,
-  "pass_models": 2
+  "pooled_same": 0.032703181683220256,
+  "pooled_same_n": 278,
+  "pooled_heldout": 0.014491294752296074,
+  "pooled_heldout_n": 271,
+  "pass_models": 0
  },
  "without_empty": {
-  "pooled_same": 0.18898325786323855,
-  "pooled_same_n": 291,
-  "pooled_heldout": 0.14522306963822856,
-  "pooled_heldout_n": 263,
-  "pass_models": 2
+  "pooled_same": 0.0042982061279580866,
+  "pooled_same_n": 262,
+  "pooled_heldout": 0.03457985323642489,
+  "pooled_heldout_n": 242,
+  "pass_models": 0
  }
 }

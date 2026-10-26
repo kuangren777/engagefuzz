@@ -3,6 +3,8 @@ Every failed trace is re-scored against every OTHER injection task of its suite 
 never saw). FP rate = share of (trace, mismatched injection task) pairs whose atk_hit_side fires,
 using prox_v2.feats unchanged.
 python3 px1a_collision.py -> runs/px/px1a.json
+python3 px1a_collision.py --models qwen3-8b-yf,qwen3-32b-local,qwen3-8b-local -> runs/px/px1a_gate.json
+  (parse-gate models only; frontier rows unfiltered)
 """
 import collections, glob, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +13,9 @@ import prox_v2 as P
 from harness import suite as get_suite
 
 R = os.path.join(HERE, "..", "runs")
+MODELS = None
+if "--models" in sys.argv:
+    MODELS = set(sys.argv[sys.argv.index("--models") + 1].split(","))
 def load(src):
     if src == "rq1":
         fs = [f for f in glob.glob(os.path.join(R, "rq1", "census_*.jsonl")) if "ABORTED" not in f]
@@ -23,6 +28,8 @@ def load(src):
         for l in open(f):
             r = json.loads(l)
             if r.get("err") is not None or r.get("trace") is None or r.get("security"):
+                continue
+            if MODELS and src != "frontier" and r.get("model") not in MODELS:
                 continue
             k = r.get("memo_key") or (src, f, len(out))
             if src == "rq2" and k in seen:
@@ -64,4 +71,6 @@ for src in ("rq1", "rq2", "frontier"):
     print(f"{src}: traces={len(rows)} pairs={pairs} fires={fires} FP={100*fires/max(1,pairs):.2f}%",
           {s: f"{100*res[src]['per_suite'][s]['rate']:.2f}%" for s in res[src]['per_suite']},
           "top:", vals.most_common(5))
-json.dump(res, open(os.path.join(R, "px", "px1a.json"), "w"), indent=1)
+if MODELS:
+    res["models"] = sorted(MODELS)
+json.dump(res, open(os.path.join(R, "px", "px1a_gate.json" if MODELS else "px1a.json"), "w"), indent=1)

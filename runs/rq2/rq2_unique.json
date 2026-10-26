@@ -3,74 +3,74 @@
   "arms": {
    "prox-v21": {
     "n": 40,
-    "distinct_mean": 3.825,
-    "success_share": 0.825
+    "distinct_mean": 3.4,
+    "success_share": 0.85
    },
    "random": {
     "n": 40,
-    "distinct_mean": 4.45,
-    "success_share": 0.85
+    "distinct_mean": 3.975,
+    "success_share": 0.875
    },
    "binary": {
     "n": 40,
-    "distinct_mean": 6.45,
-    "success_share": 0.95
+    "distinct_mean": 7.4,
+    "success_share": 0.975
    },
    "coverage": {
     "n": 40,
-    "distinct_mean": 4.325,
-    "success_share": 0.85
+    "distinct_mean": 5.35,
+    "success_share": 0.925
    }
   },
   "distinct": {
    "random": {
     "A12": 0.4125,
-    "p_one_sided": 0.8931744497920078,
+    "p_one_sided": 0.9095365653506968,
     "holm_one_sided": 1.0,
-    "p_two_sided": 0.21365110041598445,
-    "holm_two_sided": 0.4273022008319689,
+    "p_two_sided": 0.18092686929860635,
+    "holm_two_sided": 0.18092686929860635,
     "n_pairs": 40
    },
    "binary": {
-    "A12": 0.3,
-    "p_one_sided": 0.9998750700030078,
+    "A12": 0.125,
+    "p_one_sided": 0.999999160443136,
     "holm_one_sided": 1.0,
-    "p_two_sided": 0.00024985999398445535,
-    "holm_two_sided": 0.0007495799819533661,
+    "p_two_sided": 1.679113728092256e-06,
+    "holm_two_sided": 5.037341184276768e-06,
     "n_pairs": 40
    },
    "coverage": {
-    "A12": 0.4125,
-    "p_one_sided": 0.8614046052380588,
+    "A12": 0.3,
+    "p_one_sided": 0.9996498298149362,
     "holm_one_sided": 1.0,
-    "p_two_sided": 0.2771907895238822,
-    "holm_two_sided": 0.4273022008319689,
+    "p_two_sided": 0.0007003403701275958,
+    "holm_two_sided": 0.0014006807402551916,
     "n_pairs": 40
    }
   },
   "any_viol": {
    "random": {
     "A12": 0.4875,
-    "p_one_sided": 0.6305586598182363,
+    "p_one_sided": 0.6726395769907115,
     "holm_one_sided": 1.0,
-    "p_two_sided": 0.7388826803635273,
-    "holm_two_sided": 1.0,
+    "p_two_sided": 0.6547208460185769,
+    "holm_two_sided": 0.6547208460185769,
     "n_pairs": 40
    },
    "binary": {
     "A12": 0.4375,
-    "p_one_sided": 0.9522096477271853,
+    "p_one_sided": 0.9873263406612659,
     "holm_one_sided": 1.0,
-    "p_two_sided": 0.0955807045456294,
-    "holm_two_sided": 0.28674211363688823,
+    "p_two_sided": 0.025347318677468252,
+    "holm_two_sided": 0.07604195603240475,
     "n_pairs": 40
    },
    "coverage": {
-    "A12": 0.4875,
-    "p_one_sided": 0.6305586598182363,
+    "A12": 0.4625,
+    "p_one_sided": 0.8715803710210717,
     "holm_one_sided": 1.0,
-    "p_two_sided": 0.7388826803635273,
-    "holm_two_sided": 1.0,
+    "p_two_sided": 0.25683925795785656,
+    "holm_two_sided": 0.5136785159157131,
     "n_pairs": 40
    }
   }

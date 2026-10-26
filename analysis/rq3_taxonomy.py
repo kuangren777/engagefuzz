@@ -4,6 +4,7 @@ Among level-3 runs (attacker-unique value on a side-effect call, oracle did not 
   wrong-function: the value appears on a function not in the injection-task ground truth
   other         : GT function and all its GT arg values present, oracle still did not fire
 python3 rq3_taxonomy.py -> out/rqtax_numbers.tex
+python3 rq3_taxonomy.py --models qwen3-8b-yf,qwen3-32b-local,qwen3-8b-local  (models that pass the tool-call parse gate)
 """
 import collections
 import glob
@@ -40,10 +41,12 @@ def classify(r):
     return "other"
 
 
-def main():
+def main(models=None):
     rows = [json.loads(l) for d in ("rq1", "rq2") for f in glob.glob(os.path.join(HERE, "..", "runs", d, "*.jsonl"))
             if "ABORTED" not in f and "memo" not in f and "audit" not in f and "paired" not in f and "stats" not in f and "selected" not in f and "density" not in f and "validity" not in f
             for l in open(f)]
+    if models:
+        rows = [r for r in rows if r.get("model") in models]
     lvl3 = []
     for r in rows:
         if r.get("err") is not None or r.get("trace") is None or r.get("security"):
@@ -71,4 +74,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--models", default=None, help="comma-separated served model ids to keep (default: all)")
+    a = ap.parse_args()
+    main(set(a.models.split(",")) if a.models else None)

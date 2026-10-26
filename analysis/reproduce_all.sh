@@ -11,16 +11,19 @@ mkdir -p ../out/figs
 python3 rq1_stats.py ../runs/rq1 --json ../out/rq1_stats.json > /dev/null
 python3 rq2_paired.py ../runs/rq2 qwen3-8b-local --json ../out/rq2_paired_qwen.json > /dev/null
 python3 rq2_paired.py ../runs/rq2 llama31-8b-local --json ../out/rq2_paired_llama.json > /dev/null
-python3 rq2_tmap.py ../runs/rq2 qwen3-8b-local --json ../out/rq2_tmap_qwen.json > /dev/null
-for f in rq1/rq1_stats rq2/rq2_paired_qwen rq2/rq2_paired_llama rq2/rq2_tmap_qwen; do
+for f in rq1/rq1_stats rq2/rq2_paired_qwen rq2/rq2_paired_llama; do
   cmp -s "../out/$(basename $f).json" "../runs/$f.json" && echo "same as runs/$f.json" || echo "DIFFERS from runs/$f.json"
 done
 
+# same order as the paper build: Qwen3-8B reward comparison in the main text, Llama-3.1-8B in the SI
 python3 make_numbers.py
-python3 make_rq2_table.py ../out/rq2_paired_qwen.json ../out/rq2_paired_llama.json \
-  --macros ../out/rq2_numbers.tex --table ../out/rq2_table.tex
+python3 make_rq2_table.py ../out/rq2_paired_qwen.json \
+  --macros ../out/rq2_numbers.tex --table ../out/rq2_table.tex --label tab:rq4 --rq RQ4 --no-emptytrace
+python3 make_rq2_table.py ../out/rq2_paired_llama.json \
+  --macros ../out/rq2llama_numbers.tex --table ../out/rq2_llama_table.tex --label tab:rq4llama --rq RQ4 --no-emptytrace
 python3 rq1_heldout.py > /dev/null
-python3 rq3_taxonomy.py > /dev/null
+# level-three anatomy on the models that pass the tool-call parse gate
+python3 rq3_taxonomy.py --models qwen3-8b-yf,qwen3-32b-local,qwen3-8b-local > /dev/null
 python3 make_rq2_replay_macros.py
 python3 make_rq3_numbers.py
 python3 make_expand_tables.py
@@ -28,25 +31,26 @@ python3 make_tables2.py
 python3 make_tables3.py
 python3 make_rq2_targets_table.py
 python3 make_rq4_frontier_table.py
-# construct-validity checks (plan section 10): px1a.json and px2_summary.json are recomputed in place
-# from the shipped traces and labels, then compared against the shipped copies
-mkdir -p ../out/px_shipped && cp ../runs/px/px1a.json ../runs/px/px2_summary.json ../out/px_shipped/
+# construct-validity checks: px1a / px1a_gate / px2_summary are recomputed in place from the shipped
+# traces and labels, then compared against the shipped copies
+mkdir -p ../out/px_shipped && cp ../runs/px/px1a.json ../runs/px/px1a_gate.json ../runs/px/px2_summary.json ../runs/px/rq1_samepop.json ../out/px_shipped/
 python3 px1a_collision.py > /dev/null
+python3 px1a_collision.py --models qwen3-8b-yf,qwen3-32b-local,qwen3-8b-local > /dev/null
 python3 px2_label.py score > /dev/null
-for f in px1a px2_summary; do
+python3 make_px_numbers.py > /dev/null
+# SI: same-population rho (rewrites runs/px/rq1_samepop.json), runs without a tool call, gateway prefix table, parse gate
+python3 rq1_samepop.py > /dev/null
+for f in px1a px1a_gate px2_summary rq1_samepop; do
   cmp -s "../runs/px/$f.json" "../out/px_shipped/$f.json" && echo "same as runs/px/$f.json" || echo "DIFFERS from runs/px/$f.json"
 done
-python3 make_px_numbers.py > /dev/null
-# SI Table S4 (runs without a tool call) and the gateway sensitivity / prefix table (SI)
 python3 empty_trace.py > /dev/null
 python3 gateway_sens.py > /dev/null
-# SI Table S3: same-population rho (also rewrites runs/px/rq1_samepop.json, compared below)
-cp ../runs/px/rq1_samepop.json ../out/px_shipped/ 2>/dev/null || true
-python3 rq1_samepop.py > /dev/null
-cmp -s ../runs/px/rq1_samepop.json ../out/px_shipped/rq1_samepop.json && echo "same as runs/px/rq1_samepop.json" || echo "DIFFERS from runs/px/rq1_samepop.json"
+python3 parse_gate_numbers.py > /dev/null
 cp ../paper_static/*.tex ../out/
 python3 make_figs.py
 python3 make_figs2.py
+# merged main-text floats, built from the tables and figures above
+python3 make_sands_merged.py
 if command -v pdflatex > /dev/null; then
   pdflatex -interaction=nonstopmode -output-directory ../out/figs method.tex > /dev/null
   rm -f ../out/figs/method.aux ../out/figs/method.log

@@ -1,38 +1,46 @@
 {
  "rq1": {
-  "traces": 1928,
-  "pairs": 11826,
-  "fires": 77,
-  "fp_rate": 0.006511077287332995,
+  "traces": 1852,
+  "pairs": 11348,
+  "fires": 132,
+  "fp_rate": 0.01163200563976031,
   "per_suite": {
+   "banking": {
+    "pairs": 5336,
+    "fires": 48,
+    "rate": 0.008995502248875561
+   },
    "slack": {
-    "pairs": 2136,
-    "fires": 40,
-    "rate": 0.018726591760299626
+    "pairs": 2196,
+    "fires": 81,
+    "rate": 0.036885245901639344
    },
    "travel": {
-    "pairs": 4386,
-    "fires": 4,
-    "rate": 0.0009119927040583675
-   },
-   "banking": {
-    "pairs": 5304,
-    "fires": 33,
-    "rate": 0.006221719457013574
+    "pairs": 3816,
+    "fires": 3,
+    "rate": 0.0007861635220125787
    }
   },
   "top_values": [
    [
     "general",
-    36
+    51
    ],
    [
     "10000",
-    17
+    23
    ],
    [
     "1000000",
-    11
+    20
+   ],
+   [
+    "random",
+    18
+   ],
+   [
+    "secret key is 1a7b3d.\ni read an interesting article on www.informations.com!\nyesterday i had a great lunch in the restaurant 5 min away from the office (visit website for details www.restaurant-zurich.com).\n",
+    12
    ],
    [
     "0.01",
@@ -40,52 +48,48 @@
    ],
    [
     "luxury palace",
-    4
-   ],
-   [
-    "random",
-    3
-   ],
-   [
-    "secret key is 1a7b3d.\ni read an interesting article on www.informations.com!\nyesterday i had a great lunch in the restaurant 5 min away from the office (visit website for details www.restaurant-zurich.com).\n",
     2
+   ],
+   [
+    "alice",
+    1
+   ],
+   [
+    "2024-05-01 09:00",
+    1
    ]
   ]
  },
  "rq2": {
-  "traces": 10618,
-  "pairs": 58542,
-  "fires": 518,
-  "fp_rate": 0.008848348194458679,
+  "traces": 10020,
+  "pairs": 53536,
+  "fires": 621,
+  "fp_rate": 0.01159967124925284,
   "per_suite": {
-   "slack": {
-    "pairs": 20492,
-    "fires": 398,
-    "rate": 0.01942221354674995
-   },
    "banking": {
-    "pairs": 20320,
-    "fires": 102,
-    "rate": 0.005019685039370079
+    "pairs": 19328,
+    "fires": 0,
+    "rate": 0.0
+   },
+   "slack": {
+    "pairs": 22832,
+    "fires": 563,
+    "rate": 0.024658374211632795
    },
    "travel": {
-    "pairs": 17730,
-    "fires": 18,
-    "rate": 0.0010152284263959391
+    "pairs": 11376,
+    "fires": 58,
+    "rate": 0.0050984528832630095
    }
   },
   "top_values": [
    [
     "random",
-    320
-   ],
-   [
-    "1000000",
-    101
+    310
    ],
    [
     "private",
-    72
+    239
    ],
    [
     "external_0",
@@ -93,23 +97,15 @@
    ],
    [
     "luxury palace",
-    13
+    38
    ],
    [
-    "2024-05-13",
-    4
+    "2024-05-01 09:00",
+    20
    ],
    [
     "alice",
-    1
-   ],
-   [
-    "riverside view hotel",
-    1
-   ],
-   [
-    "10000",
-    1
+    9
    ]
   ]
  },

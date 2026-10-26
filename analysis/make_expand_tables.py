@@ -44,7 +44,7 @@ def rq2_ops():
            r"\caption{Outcome by mutation operator over all fresh and replayed executions of the proximity, "
            r"random, binary-success and coverage reward \varwords{} on both models. Executions, the share that violates and the "
            r"share that reaches the level-three tier without violating. Operators are ordered by "
-           r"violation share. The \rqtwoErrN{} executions that ended in an oracle error are left out.}",
+           r"violation share. The \rqtwoErrN{} executions that ended in an oracle error are left out. The second model is Llama-3.1-8B, which fails the tool-call parse gate.}",
            r"\label{tab:rq2ops}", r"\begin{tabular}{lccc}", r"\toprule",
            r"Operator & executions & violates $\uparrow$ & level 3 only \\", r"\midrule"] + rows + \
           [r"\bottomrule", r"\end{tabular}", r"\end{table}"]

@@ -18,6 +18,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 from engagefuzz import prox_v2, run_flags, served_root  # sets sys.path for testbed
 import harness  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "analysis"))
+from s1b_reparse import calls_in_text  # noqa: E402
 from run_select import partitions  # noqa: E402
 
 REPS = {None: 10, "both": 5}
@@ -34,6 +36,9 @@ def main():
     ap.add_argument("--single-call", action="store_true")
     ap.add_argument("--sniff", type=int, default=20, help="probe runs before the full census (0 = off)")
     ap.add_argument("--backend", default="gpu-a", help="free-form label recorded in each row (e.g. gpu-a, gpu-b)")
+    ap.add_argument("--parser", default=None, help="vLLM tool-call parser and chat template of the serve, stored per row (S1-A)")
+    ap.add_argument("--gate", action="store_true", help="S1-A amendment gate on the sniff: tool-call rate >= 0.90 and unparsed text calls <= 0.02")
+    ap.add_argument("--sniff-only", action="store_true", help="stop after the sniff (smoke run)")
     a = ap.parse_args()
     assert a.cap <= 8 or (a.cap <= 16 and a.metrics), "cap > 8 needs --metrics (falls back to 8 on waiting>0)"
     from run_e2 import Limiter, guard
@@ -78,7 +83,8 @@ def main():
     def go(j):
         (s, ut, it), d, k = j
         r = run_pair(a.model, s, ut, it, harness.default_injection(s, it), defense=d)
-        r.update(**run_flags(a.model, r), port=a.port)
+        r.update(**run_flags(a.model, r), port=a.port, parser=a.parser,
+                 text_calls=len(calls_in_text(r.get("final") or "")) if r.get("err") is None else None)
         r.update(rep=k, served_root=root, backend=a.backend, vllm=vllm,
                  # model-format failure: tool call written into text, nothing parsed (PM: report separately)
                  fmt_fail=bool(r.get("err") is None and not r.get("trace") and "<tool_call>" in (r.get("final") or "")))
@@ -104,6 +110,13 @@ def main():
         print(f"sniff: {len(rows)}/{len(probe)} connected, tool-call rate {rate:.2f}, fmt_fail rate {ff:.2f}", flush=True)
         if rate < 0.5:
             sys.exit(f"ABORT: tool-call rate {rate:.2f} < 0.5 on sniff; rename the output before any rerun")
+        unp = sum(bool(r.get("text_calls")) for r in rows) / max(1, len(rows))
+        print(f"gate: tool-call rate {rate:.3f} (need >= 0.90), unparsed text calls {unp:.3f} (need <= 0.02)", flush=True)
+        if a.gate and (rate < 0.90 or unp > 0.02):
+            sys.exit("GATE FAIL: S1-A parse gate not met; no full census")
+        if a.sniff_only:
+            print("sniff-only: stop", flush=True)
+            return
         jobs = [j for j in jobs if (*j[0], j[1], j[2]) not in ok_keys]   # errored probes are retried
     with ThreadPoolExecutor(a.cap) as ex:
         list(ex.map(go, jobs))

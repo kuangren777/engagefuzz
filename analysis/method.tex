@@ -38,20 +38,20 @@
       line width=0.5pt, below=14mm of s, xshift=17mm] (lad)
   {\textbf{first match, top $\rightarrow$ bottom}\\[1.5pt]
    L4~~oracle fires\\
+   L0~~unseen\\
    L3~~side-effect $\wedge\ \mathrm{uniq}(v)$\\
    L2~~side-effect $\wedge\ f\notin F_{\mathit{user}}$\\
-   L1~~seen, no call\\
-   L0~~unseen};
+   L1~~seen, no L2/L3 call};
 \draw[dashed, line width=0.5pt] (s.south) -- (lad.north);
 
 % ---------- measure path (top layer) ----------------------------------------
 \node[box, fill=blue!8, text=blue!50!black, above=13mm of s, xshift=-11mm] (mea)
-  {per-unit $\bar{s}_u$};
+  {level per run};
 \node[box, fill=blue!8, text=blue!50!black, right=6mm of mea] (rho)
-  {$\rho(\bar{s}_u,\ \mathrm{trig})$};
+  {level distribution};
 \draw[ar] (mea) -- (rho);
 \draw[ar] (s.north) .. controls ($(s.north)+(0,5mm)$) and ($(mea.south)+(0,-5mm)$)
-  .. (mea.south) node[lab, text=blue!50!black, pos=0.55, right=2pt] {measure (RQ1/RQ4)};
+  .. (mea.south) node[lab, text=blue!50!black, pos=0.55, right=2pt] {measure (RQ1--RQ3)};
 
 % ---------- reward path (bottom layer, right descent, left return) ----------
 \node[box, fill=red!8, text=red!50!black, below=10mm of lad, xshift=7mm] (rew)
@@ -60,7 +60,7 @@
   {admit if $r{>}0\ \wedge\ r\geq r_p$};
 \draw[ar] (rew) -- (adm);
 \draw[ar, rounded corners=2.5pt] (s.east) -- ($(s.east)+(34mm,0)$)
-  node[lab, text=red!50!black, midway, above=1.2pt] {reward (RQ2)}
+  node[lab, text=red!50!black, midway, above=1.2pt] {reward (RQ4)}
   |- (rew.east);
 \draw[ar, rounded corners=2.5pt] (adm.west) -| (pool.south);
 

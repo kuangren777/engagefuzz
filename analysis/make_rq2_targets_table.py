@@ -16,7 +16,7 @@ OUT = os.path.join(HERE, "..", "out", "rq2_targets_table.tex")
 RUNS = os.path.join(HERE, "..", "runs")
 PAT = re.compile(r".+?_(None|both)_(banking|slack|travel)_(user_task_\d+)_(injection_task_\d+)_([a-z0-9-]+)_(\d+)\.jsonl$")
 DISP = {"qwen3-8b-local": "Qwen3-8B", "llama31-8b-local": "Llama-3.1-8B"}
-ARMS = ["prox-v21", "random", "binary", "coverage", "tmap-ladder"]
+ARMS = ["prox-v21", "random", "binary", "coverage"]   #: T-MAP column dropped, the arm is void after S1
 
 
 def a12(x, y):
@@ -47,12 +47,11 @@ def main():
             A = f"{F(a12(px, bn), '.3f')}" if px and bn and len(px) == len(bn) else "--"
             rows.append(f"{DISP[mk]} & {s}:{ut.split('_')[-1]}/{it.split('_')[-1]} & {'combined' if dfn == 'both' else 'none'} & " + " & ".join(cells) + f" & {A} " + r"\\")
     tab = [r"\begin{table}[t]\centering",
-           r"\caption{Per-target view of RQ2, post-hoc. Mean violations per campaign for each "
+           r"\caption{Per-target view of RQ4, post-hoc. Mean violations per campaign for each "
            r"reward \varword{} on every selected target, with the paired $\hat A_{12}$ of proximity against "
-           r"binary success over the five seeds. The T-MAP ladder runs on Qwen3-8B only. A dash "
-           r"marks a \varword{} that was not run on that model. Defense gives the condition under which the target was selected and run, either none or the combined AgentDojo prompt-level defense.}",
-           r"\label{tab:rq2targets}", r"\begin{tabular}{lllccccc c}", r"\toprule",
-           r"Model & Target & Defense & prox $\uparrow$ & rand $\uparrow$ & binary $\uparrow$ & cov $\uparrow$ & T-MAP $\uparrow$ & $\hat A_{12}$ p/b $\uparrow$ \\", r"\midrule"] + \
+           r"binary success over the five seeds. Llama-3.1-8B fails the tool-call parse gate. Defense gives the condition under which the target was selected and run, either none or the combined AgentDojo prompt-level defense.}",
+           r"\label{tab:rq2targets}", r"\begin{tabular}{lllcccc c}", r"\toprule",
+           r"Model & Target & Defense & prox $\uparrow$ & rand $\uparrow$ & binary $\uparrow$ & cov $\uparrow$ & $\hat A_{12}$ p/b $\uparrow$ \\", r"\midrule"] + \
           rows + [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
     open(OUT, "w").write("\n".join(tab) + "\n")
     print(f"rq2_targets_table: {len(rows)} target rows")
